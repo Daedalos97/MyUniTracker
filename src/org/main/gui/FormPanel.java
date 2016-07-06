@@ -152,9 +152,9 @@ public class FormPanel extends JPanel implements ActionListener {
                 edit_assessname = new JTextField("Assessment");
                 mark = new JLabel("Mark for assessment: ");
                 edit_mark = new JTextField("1");
-                outOf = new JLabel("Assessment mark out of: ");
+                outOf = new JLabel("Mark out of: ");
                 edit_outOf = new JTextField("10");
-                weight = new JLabel("Weight of assessment on unit: ");
+                weight = new JLabel("Weight of assessment: ");
                 edit_weight = new JTextField("5");
                 submit.addActionListener(new ActionListener() {
                     @Override

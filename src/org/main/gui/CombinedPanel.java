@@ -140,7 +140,7 @@ public class CombinedPanel extends JPanel {
     private class Dialog extends JFrame {
         
         public Dialog() {
-            super("New Unit");
+            super("Add Past Results");
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             setSize(280,150);
             setLocationRelativeTo(null);
