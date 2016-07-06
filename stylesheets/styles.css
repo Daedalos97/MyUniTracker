@@ -74,8 +74,12 @@ h4 {
   margin:0 0 5px;
 }
 
-p, ul, ol, pre, dl {
+p, ol, pre, dl {
   margin:0 0 10px;
+}
+
+ul {
+    margin: 0 0 5px;
 }
 
 table {
