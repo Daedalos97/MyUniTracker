@@ -52,7 +52,7 @@ public class MyUniTrackerGUI extends JFrame {
         mi0.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                Dialog d = new Dialog(MyUniTracker.units.size()-1);                                                                                                      
+                Dialog d = new Dialog(tab.getTabCount()-1);                                                                                                      
             }
         });
         
@@ -141,6 +141,7 @@ public class MyUniTrackerGUI extends JFrame {
             JButton remove_button = new JButton("Remove Unit");
             
             if (index < 0) {
+                System.out.println("1");
                 unit_name = new JTextField("Unit Name");
                 credit_points = new JTextField("Credit Points");
                 remove_button.setEnabled(false);
@@ -158,13 +159,14 @@ public class MyUniTrackerGUI extends JFrame {
                     }
                 });
             } else if (index < MyUniTracker.units.size()) {
+                System.out.println("2");
                 unit_name = new JTextField(tab.getTitleAt(tab.getSelectedIndex()));
                 credit_points = new JTextField(String.valueOf(MyUniTracker.units.get(tab.getSelectedIndex()).getCreditPoints()));
                 remove_button.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
-                        tab.removeTabAt(index);
-                        MyUniTracker.units.remove(index);
+                        tab.removeTabAt(tab.getSelectedIndex());
+                        MyUniTracker.units.remove(tab.getSelectedIndex());
                         close();
                     }
                 });
@@ -183,6 +185,7 @@ public class MyUniTrackerGUI extends JFrame {
                     }
                 });
             } else {
+                System.out.println("3");
                 unit_name = new JTextField("Unit");
                 credit_points = new JTextField();
                 remove_button.setEnabled(false);
