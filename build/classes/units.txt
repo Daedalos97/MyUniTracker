@@ -1,0 +1,118 @@
+
+[Unit] PHYL2022 6
+[Assessment] Lab-1
+[Mark] 5.0/6.0
+[Weighting] 2.5
+[Assessment] Lab-2
+[Mark] 8.5/10.0
+[Weighting] 2.5
+[Assessment] Mid-Sem
+[Mark] 20.0/20.0
+[Weighting] 10.0
+[Assessment] Lab-3
+[Mark] 10.0/10.0
+[Weighting] 5.0
+[Assessment] Lab-Test
+[Mark] 18.0/25.0
+[Weighting] 15.0
+[Final] 
+[Mark] 0.1/10.0
+[Weighting] 55.0
+
+[Unit] PHAR2220 6
+[Assessment] Lab-1
+[Mark] 1.0/10.0
+[Weighting] 2.5
+[Assessment] Lab-2
+[Mark] 5.0/10.0
+[Weighting] 2.5
+[Assessment] Lab-3
+[Mark] 5.0/10.0
+[Weighting] 2.5
+[Assessment] Lab-4
+[Mark] 7.5/10.0
+[Weighting] 2.5
+[Assessment] Lab-5
+[Mark] 8.0/10.0
+[Weighting] 2.5
+[Assessment] Lab-6
+[Mark] 9.0/10.0
+[Weighting] 2.5
+[Assessment] Mid-Sem
+[Mark] 8.0/10.0
+[Weighting] 25.0
+
+[Unit] CITS2200 6
+[Assessment] Lab-1
+[Mark] 5.0/5.0
+[Weighting] 2.5
+[Assessment] Lab-2
+[Mark] 2.0/2.0
+[Weighting] 2.5
+[Assessment] Lab-3
+[Mark] 3.0/3.0
+[Weighting] 2.5
+[Assessment] Lab-4
+[Mark] 5.0/5.0
+[Weighting] 2.5
+[Assessment] Lab-5
+[Mark] 8.0/8.0
+[Weighting] 2.5
+[Assessment] Lab-6
+[Mark] 6.0/6.0
+[Weighting] 2.5
+[Assessment] Lab-7
+[Mark] 2.0/2.0
+[Weighting] 2.5
+[Assessment] Lab-8
+[Mark] 4.0/6.0
+[Weighting] 2.5
+[Assessment] Mid-Sem
+[Mark] 7.0/10.0
+[Weighting] 10.0
+[Assessment] Project
+[Mark] 20.0/20.0
+[Weighting] 20.0
+[Final] 
+[Mark] 0.1/10.0
+[Weighting] 50.0
+
+[Unit] MATH1001 6
+[Assessment] Mid-Sem
+[Mark] 94.0/140.0
+[Weighting] 20.0
+[Assessment] Lab-1
+[Mark] 11.5/16.0
+[Weighting] 5.0
+[Assessment] Lab-2
+[Mark] 15.6/17.0
+[Weighting] 5.0
+[Assessment] Tutorial
+[Mark] 10.0/10.0
+[Weighting] 5.0
+[Assessment] Home-Work
+[Mark] 10.0/10.0
+[Weighting] 10.0
+[Final] 
+[Mark] 0.1/10.0
+[Weighting] 55.0
+
+[Unit] MATH1002 6
+[Assessment] Lab-1
+[Mark] 0.1/10.0
+[Weighting] 5.0
+[Assessment] Lab-2
+[Mark] 0.1/10.0
+[Weighting] 5.0
+[Assessment] Lab-3
+[Mark] 0.1/10.0
+[Weighting] 5.0
+
+[Past-Grade] CITS1001 HD 86.0 6
+[Past-Grade] PHIL1001 D 79.0 6
+[Past-Grade] CITS1401 CR 66.0 6
+[Past-Grade] MATH1721 HD 80.0 6
+[Past-Grade] CITS1402 HD 86.0 6
+[Past-Grade] ENSC1001 D 72.0 6
+[Past-Grade] ECON1001 HD 80.0 6
+[Past-Grade] MATH1722 D 75.0 6
