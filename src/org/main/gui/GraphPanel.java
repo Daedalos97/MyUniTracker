@@ -25,7 +25,6 @@
 package org.main.gui;
 
 import org.main.myunitracker.Assessment;
-import java.awt.Color;
 import javax.swing.JPanel;
 import javafx.scene.chart.LineChart;
 import javafx.embed.swing.JFXPanel;
@@ -36,6 +35,7 @@ import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import org.main.myunitracker.MyUniTracker;
+import org.main.myunitracker.Unit;
 
 
 /**
@@ -44,30 +44,31 @@ import org.main.myunitracker.MyUniTracker;
  */
 public class GraphPanel extends JPanel {
     
-    public XYChart.Series series;
+    private XYChart.Series series;
+    private Unit unit;
     
-    public GraphPanel(int index) {
+    public GraphPanel(Unit u) {
         this.setSize(200, 300);
         this.setVisible(true);
         final JFXPanel fxPanel = new JFXPanel();
-        final int i = index;
+        this.unit = u;
         
         add(fxPanel);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                initFX(fxPanel,i);
+                initFX(fxPanel);
             }
         });
     }
     
-    private void initFX(JFXPanel fxPanel, int idx) {
+    private void initFX(JFXPanel fxPanel) {
         // This method is invoked on the JavaFX thread
-        Scene scene = createScene(idx);
+        Scene scene = createScene();
         fxPanel.setScene(scene);
     } 
     
-    private Scene createScene(int idx) {
+    private Scene createScene() {
         Stage s = new Stage();
         s.setTitle("Unit Progress");
         //Defining the axes
@@ -78,28 +79,28 @@ public class GraphPanel extends JPanel {
         yAxis.setUpperBound(100.0);
         //creating the chart
         final LineChart<String,Number> lineChart = new LineChart(xAxis,yAxis);
-        lineChart.setTitle(MyUniTracker.units.get(idx).getName() + " Progress");
+        lineChart.setTitle(unit.getName() + " Progress");
         lineChart.setStyle(".default-color0.chart-series-line { -fx-stroke: #f0e68c; }");
         //defining a series
         series = new XYChart.Series();
         series.setName(lineChart.getTitle());
-        for (Assessment a : MyUniTracker.units.get(idx).getAssessments()) {
+        for (Assessment a : unit.getAssessments()) {
             if (!a.getAssessmentName().equals("Final Exam")) 
             series.getData().add(new XYChart.Data(a.getAssessmentName(),(a.getPercentage())));
         }
-        Scene scene = new Scene(lineChart,855,600);
+        Scene scene = new Scene(lineChart,800,592);
         lineChart.getData().add(series);
         Platform.setImplicitExit(false);
        
         return scene;
     }
     
-    public void updateGraph(int i) {
-        final int n = i;
+    public void updateGraph(Unit u) {
+        final Unit unit = u;
         Platform.runLater(new Runnable() {
             @Override public void run() {
                 series.getData().clear();
-                for (Assessment a : MyUniTracker.units.get(n).getAssessments()) {
+                for (Assessment a : unit.getAssessments()) {
                     if (!a.getAssessmentName().equals("Final Exam")) {
                         series.getData().add(new XYChart.Data(a.getAssessmentName(),(a.getPercentage())));
                     }

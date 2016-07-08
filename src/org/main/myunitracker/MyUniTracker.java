@@ -129,7 +129,7 @@ public class MyUniTracker {
         UR.readUnits();
         units = UR.getUnits();
         past_units = UR.getGrades();
-        MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",900,800);
+        MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",1097,700);
         System.out.println(System.currentTimeMillis() - time);
         //System.exit(-1);
     }

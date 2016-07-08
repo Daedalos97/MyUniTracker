@@ -24,11 +24,12 @@
 
 package org.main.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.ActionListener;
-import java.awt.GridLayout;
+import javax.swing.BorderFactory;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.Insets;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
@@ -37,7 +38,6 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 import org.main.myunitracker.Unit;
 import org.main.myunitracker.Assessment;
-import org.main.myunitracker.MyUniTracker;
 
 /**
  * @author Samuel James Serwan Heath
@@ -45,54 +45,133 @@ import org.main.myunitracker.MyUniTracker;
 public class FormPanel extends JPanel implements ActionListener {
     
     private Unit unit;
-    private JButton add,edit,remove,checkFinalMark;
+    private JButton add,edit,remove,finalMarkNeeded;
     private JLabel finalMarkLabel,addLabel,editLabel,curGrade,curMark,reqMark;
-    private JComboBox finalCB;
-    private JComboBox<String> jcb;
+    private JComboBox finalGradeCB;
+    private JComboBox<String> assessmentsCB;
     private GraphPanel gp;
     private CombinedPanel cp;
-    private final int i;
     
-    public FormPanel(int index, GraphPanel graphPanel, CombinedPanel combinedPanel) {
-        this.setLayout(new GridLayout(3,4));
-        unit = MyUniTracker.units.get(index);
+    public FormPanel(Unit u, GraphPanel graphPanel, CombinedPanel combinedPanel) {
+        this.setSize(200, 592);
+        this.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        
+        JPanel assessPanel = new JPanel();
+        assessPanel.setLayout(new GridBagLayout());
+        assessPanel.setBorder(BorderFactory.createTitledBorder("Assessments"));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        this.add(assessPanel,gbc);
+        
+        JPanel statsPanel = new JPanel();
+        statsPanel.setLayout(new GridBagLayout());
+        statsPanel.setBorder(BorderFactory.createTitledBorder("Statistics"));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        this.add(statsPanel,gbc);
+        
+        this.unit = u;
         this.gp = graphPanel;
         this.cp = combinedPanel;
-        i = index;
-        
-        add = new JButton("Add Assessment");
-        edit = new JButton("Edit Assessment");
-        remove  = new JButton("Remove Assessment");
-        checkFinalMark = new JButton("Calculate % needed in final");
-        checkFinalMark.setToolTipText("Calculates % needed in final exam to achieve selected grade.");
-      
-        finalMarkLabel = new JLabel("Select a Grade");
-        finalMarkLabel.setForeground(Color.WHITE);
-        addLabel = new JLabel(" Click to add an assessment: ");
-        editLabel = new JLabel(" Select assessment to edit: ");
-        curGrade = new JLabel("Current Grade: " + unit.getGrade());
-        curMark = new JLabel("Current(Weighted) Mark: " + unit.getWeightedMark());
-        reqMark = new JLabel("Need " + unit.percentForGrade("HD") + " in final exam to get HD.");
-        
-        Assessment[] u = new Assessment[unit.getAssessments().size()];
-        unit.getAssessments().toArray(u);
+        Assessment[] a = new Assessment[unit.getAssessments().size()];
+        unit.getAssessments().toArray(a);
         String[] grades = new String[] {"HD", "D", "CR","P","N"};
         String[] item = new String[unit.getAssessments().size()+1] ;
-        double[] marks = new double[u.length];
+        double[] marks = new double[a.length];
         //item[0] = "--------"; Edit this later
         for (int i = 0; i < marks.length; i++) {
             item[i] = unit.getAssessments().get(i).getAssessmentName(); //set it to i+1
             marks[i] = unit.getAssessments().get(i).getPercentage();
         }
-        jcb = new JComboBox(item);
-        finalCB = new JComboBox(grades);
-        jcb.setSelectedIndex(0);
         
-        checkFinalMark.addActionListener(new ActionListener(){
+        GridBagConstraints gbcAssess = new GridBagConstraints();
+        
+        add = new JButton("Add Assessment");
+        add.setToolTipText("Click to add an assessment to the unit");
+        gbcAssess.gridwidth = 2;
+        gbcAssess.gridx = 0;
+        gbcAssess.gridy = 2;
+        assessPanel.add(add,gbcAssess);
+        gbcAssess.gridwidth = 1;
+        
+        edit = new JButton("Edit Assessment");
+        edit.setToolTipText("Edits the selected assessment");
+        gbcAssess.gridx = 0;
+        gbcAssess.gridy = 1;
+        assessPanel.add(edit,gbcAssess);
+        
+        remove = new JButton("Remove Assessment");
+        remove.setToolTipText("Removes the selected assessment");
+        gbcAssess.gridx = 1;
+        gbcAssess.gridy = 1;
+        assessPanel.add(remove,gbcAssess);
+        
+        JLabel selectAssess = new JLabel("Select Assessment:");
+        gbcAssess.gridx = 0;
+        gbcAssess.gridy = 0;
+        assessPanel.add(selectAssess,gbcAssess);
+        
+        assessmentsCB = new JComboBox(item);
+        assessmentsCB.setSelectedIndex(0);
+        assessmentsCB.setToolTipText("Selected assessment");
+        gbcAssess.gridx = 1;
+        gbcAssess.gridy = 0;
+        assessPanel.add(assessmentsCB,gbcAssess);
+        
+        GridBagConstraints gbcStats = new GridBagConstraints();
+        
+        finalMarkLabel = new JLabel("Select a Grade:");
+        gbcStats.gridx = 0;
+        gbcStats.gridy = 0;
+        statsPanel.add(finalMarkLabel,gbcStats);
+        
+        finalGradeCB = new JComboBox(grades);
+        gbcStats.anchor = GridBagConstraints.WEST;
+        gbcStats.gridx = 1;
+        gbcStats.gridy = 0;
+        statsPanel.add(finalGradeCB,gbcStats);
+        gbcStats.anchor = GridBagConstraints.EAST;
+        
+        reqMark = new JLabel("Need " + unit.percentForGrade("HD") + " in final exam to get HD.");
+        gbcStats.gridwidth = 2;
+        gbcStats.gridx = 0;
+        gbcStats.gridy = 2;
+        statsPanel.add(reqMark,gbcStats);
+        
+        finalMarkNeeded = new JButton("Percent needed in final");
+        finalMarkNeeded.setToolTipText("Calculates percent needed in final exam to achieve selected grade");
+        gbcStats.gridx = 0;
+        gbcStats.gridy = 1;
+        statsPanel.add(finalMarkNeeded, gbcStats);
+        gbcStats.gridwidth = 1;
+        
+        JLabel gradeLabel = new JLabel("Current Grade:");
+        gbcStats.gridx = 0;
+        gbcStats.gridy = 3;
+        statsPanel.add(gradeLabel,gbcStats);
+        
+        curGrade = new JLabel(unit.getGrade());
+        gbcStats.gridx = 1;
+        gbcStats.gridy = 3;
+        statsPanel.add(curGrade,gbcStats);
+        
+        JLabel markLabel = new JLabel("Current(Weighted) Mark:");
+        gbcStats.gridx = 0;
+        gbcStats.gridy = 4;
+        statsPanel.add(markLabel,gbcStats); 
+        
+        curMark = new JLabel(String.valueOf(unit.getWeightedMark()));
+        gbcStats.gridx = 1;
+        gbcStats.gridy = 4;
+        statsPanel.add(curMark,gbcStats); 
+        
+        finalMarkNeeded.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!finalCB.getSelectedItem().equals("--------"))
-                reqMark.setText("Need " + unit.percentForGrade((String) finalCB.getSelectedItem()) + " in final exam to get HD.");
+                String grade = (String) finalGradeCB.getSelectedItem();
+                reqMark.setText("Need " + unit.percentForGrade(grade) + " in final exam to get " + grade + ".");
             }
         });
         
@@ -107,8 +186,8 @@ public class FormPanel extends JPanel implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (unit.getAssessments().size() > 1) {
-                    unit.removeAssessment((String)jcb.getSelectedItem());
-                    gp.updateGraph(i);
+                    unit.removeAssessment((String)assessmentsCB.getSelectedItem());
+                    gp.updateGraph(unit);
                 }
                 else remove.setEnabled(false);
             }
@@ -117,23 +196,9 @@ public class FormPanel extends JPanel implements ActionListener {
         edit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Dialog edit = new Dialog(unit.findAssessment((String)jcb.getSelectedItem()));
+                Dialog edit = new Dialog(unit.findAssessment((String)assessmentsCB.getSelectedItem()));
             }
         });
-        
-        //table.setModel(u);
-        add(addLabel);
-        add(add);
-        add(editLabel,BorderLayout.WEST);
-        add(jcb);
-        add(edit);
-        add(remove);
-        add(curGrade);
-        add(curMark);
-        add(finalMarkLabel);
-        add(finalCB);
-        add(reqMark);
-        add(checkFinalMark);
         setVisible(true);
     }
     
@@ -143,45 +208,81 @@ public class FormPanel extends JPanel implements ActionListener {
     private class Dialog extends JFrame {
         
         public Dialog(Assessment a) {
-            super(a.getAssessmentName());
+            super("Edit " + a.getAssessmentName());
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            setSize(750,100);
+            setSize(275,150);
             setLocationRelativeTo(null);
             initialise(a);
         }
         
         public Dialog() {
-            super("New Assessment");
+            super("Add Assessment");
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            setSize(750,100);
+            setSize(275,150);
             setLocationRelativeTo(null);
             initialise(null);
         }
         
         private void initialise(Assessment a) {
             JPanel p = new JPanel();
-            p.setLayout(new GridLayout(2,2));
+            p.setLayout(new GridBagLayout());
+            GridBagConstraints c = new GridBagConstraints();
             final Assessment ass = a;
             
-            JLabel assessname;
-            JLabel mark;
-            JLabel outOf;
-            JLabel weight;
+            JLabel assessname = new JLabel("Assessment Name:");
+            c.anchor = GridBagConstraints.EAST;
+            c.insets = new Insets(0,10,0,0);
+            c.gridx = 0;
+            c.gridy = 0;
+            p.add(assessname,c);
+            
             final JTextField edit_assessname;
+            
+            JLabel mark = new JLabel("Assessment Mark:");
+            c.gridx = 0;
+            c.gridy = 1;
+            p.add(mark, c);
+            
             final JTextField edit_mark;
-            final JTextField edit_weight;
+            
+            JLabel outOf = new JLabel("Mark Out Of:");
+            c.gridx = 0;
+            c.gridy = 2;
+            p.add(outOf, c);
+            
             final JTextField edit_outOf; // what the mark is out of
+            
+            JLabel weight = new JLabel("Weight Of Assessment:");
+            c.gridx = 0;
+            c.gridy = 3;
+            p.add(weight,c);
+            
+            final JTextField edit_weight;
+            
             JButton submit = new JButton("Save Changes");
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.gridwidth = 2;
+            c.gridx = 1;
+            c.gridy = 4;
+            p.add(submit,c);
                     
             if (a == null) {
-                assessname = new JLabel("Name of Assessment: ");
                 edit_assessname = new JTextField("Assessment");
-                mark = new JLabel("Mark for assessment: ");
+                c.gridx = 1;
+                c.gridy = 0;
+                p.add(edit_assessname,c);
                 edit_mark = new JTextField("1");
-                outOf = new JLabel("Mark out of: ");
+                c.gridx = 1;
+                c.gridy = 1;
+                p.add(edit_mark,c);
                 edit_outOf = new JTextField("10");
-                weight = new JLabel("Weight of assessment: ");
+                c.gridx = 1;
+                c.gridy = 2;
+                p.add(edit_outOf,c);
                 edit_weight = new JTextField("5");
+                c.gridx = 1;
+                c.gridy = 3;
+                p.add(edit_weight,c);
                 submit.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
@@ -191,26 +292,34 @@ public class FormPanel extends JPanel implements ActionListener {
                             unit.addAssessment(new Assessment(edit_assessname.getText(), Double.parseDouble(edit_mark.getText()), Double.parseDouble(edit_outOf.getText()), Double.parseDouble(edit_weight.getText())));
                         }
                         close();
-                        jcb.removeAllItems();
+                        assessmentsCB.removeAllItems();
                         for (Assessment a : unit.getAssessments())
-                            jcb.addItem(a.getAssessmentName());
+                            assessmentsCB.addItem(a.getAssessmentName());
                         unit.update();
-                        curGrade.setText("Current Grade: " + unit.getGrade());
-                        curMark.setText("Current(%) Mark: " + unit.getWeightedMark());
-                        reqMark.setText("Need " + unit.percentForGrade((String) finalCB.getSelectedItem()) + " in final exam to get " + (String) finalCB.getSelectedItem());
-                        gp.updateGraph(i);
+                        curGrade.setText(unit.getGrade());
+                        curMark.setText(String.valueOf(unit.getWeightedMark()));
+                        reqMark.setText("Need " + unit.percentForGrade((String) finalGradeCB.getSelectedItem()) + " in final exam to get " + (String) finalGradeCB.getSelectedItem());
+                        gp.updateGraph(unit);
                         cp.updateGraph();
                     }
                 });
             } else {
-                assessname = new JLabel("Name of Assessment: ");
                 edit_assessname = new JTextField(ass.getAssessmentName());
-                mark = new JLabel("Edit mark: ");
+                c.gridx = 1;
+                c.gridy = 0;
+                p.add(edit_assessname,c);
                 edit_mark = new JTextField(String.valueOf(ass.getMark()));
-                outOf = new JLabel("Assessment mark out of: ");
+                c.gridx = 1;
+                c.gridy = 1;
+                p.add(edit_mark,c);
                 edit_outOf = new JTextField(String.valueOf(ass.getOutOf()));
-                weight = new JLabel("Weight of assessment on unit: ");
+                c.gridx = 1;
+                c.gridy = 2;
+                p.add(edit_outOf,c);
                 edit_weight = new JTextField(String.valueOf(ass.getAssessmentWeight()));
+                c.gridx = 1;
+                c.gridy = 3;
+                p.add(edit_weight,c);
                 submit.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
@@ -219,27 +328,18 @@ public class FormPanel extends JPanel implements ActionListener {
                         ass.setOutOf(Double.parseDouble(edit_outOf.getText()));
                         ass.setWeight(Double.parseDouble(edit_weight.getText()));
                         close();
-                        jcb.removeAllItems();
+                        assessmentsCB.removeAllItems();
                         for (Assessment a : unit.getAssessments())
-                            jcb.addItem(a.getAssessmentName());
+                            assessmentsCB.addItem(a.getAssessmentName());
                         unit.update();
-                        curGrade.setText("Current Grade: " + unit.getGrade());
-                        curMark.setText("Current(Weighted) Mark: " + unit.getWeightedMark());
-                        reqMark.setText("Need " + unit.percentForGrade((String) finalCB.getSelectedItem()) + " in final exam to get " + (String) finalCB.getSelectedItem());
-                        gp.updateGraph(i);
+                        curGrade.setText(unit.getGrade());
+                        curMark.setText(String.valueOf(unit.getWeightedMark()));
+                        reqMark.setText("Need " + unit.percentForGrade((String) finalGradeCB.getSelectedItem()) + " in final exam to get " + (String)finalGradeCB.getSelectedItem());
+                        gp.updateGraph(unit);
                         cp.updateGraph();
                     }
                 });
             }
-            p.add(assessname);
-            p.add(edit_assessname);
-            p.add(mark);
-            p.add(edit_mark);
-            p.add(outOf);
-            p.add(edit_outOf);
-            p.add(weight);
-            p.add(edit_weight);
-            p.add(submit);
             add(p);
             this.setVisible(true);
         }

@@ -43,6 +43,9 @@ import javax.swing.UIManager;
 import org.main.myunitracker.Unit;
 import java.awt.event.WindowAdapter;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.net.URL;
 import java.net.MalformedURLException;
 
@@ -90,7 +93,7 @@ public class MyUniTrackerGUI extends JFrame {
         window.setLocationRelativeTo(null);
         window.setVisible(true);
         try {
-            Thread.sleep(3500);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -99,8 +102,6 @@ public class MyUniTrackerGUI extends JFrame {
         JPanel p = new JPanel();
         tab = new JTabbedPane();
         
-        UIManager.put("MenuBar.background", BACKGROUND_COLOUR);
-        
         JMenuBar menu_bar = new JMenuBar();
         JMenu menu = new JMenu("File");
         JMenuItem mi0 = new JMenuItem("Change Unit");
@@ -108,7 +109,7 @@ public class MyUniTrackerGUI extends JFrame {
         mi0.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                Dialog d = new Dialog(tab.getTabCount()-1);                                                                                                      
+                Dialog d = new Dialog(MyUniTracker.units.size()-1);                                                                                                      
             }
         });
         
@@ -135,7 +136,7 @@ public class MyUniTrackerGUI extends JFrame {
             tab.removeTabAt(i);
         CP = new CombinedPanel(MyUniTracker.calculateGPA(),MyUniTracker.expectedGPA());
         for (int i = 0; i < MyUniTracker.units.size(); i++) {
-            org.main.gui.UnitsPanel up = new org.main.gui.UnitsPanel(i,width,height,CP);
+            org.main.gui.UnitsPanel up = new org.main.gui.UnitsPanel(MyUniTracker.units.get(i),width,height,CP);
             up.setVisible(true);
             tab.addTab(MyUniTracker.units.get(i).getName(),up);
         }
@@ -179,7 +180,7 @@ public class MyUniTrackerGUI extends JFrame {
         public Dialog(int tabIndex) {
             super("New Unit");
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            setSize(280,150);
+            setSize(250,120);
             setLocationRelativeTo(null);
             this.index = tabIndex;
             initialise();
@@ -188,17 +189,43 @@ public class MyUniTrackerGUI extends JFrame {
         
         private void initialise() {
             JPanel pane = new JPanel();
+            pane.setLayout(new GridBagLayout());
+            GridBagConstraints c = new GridBagConstraints();
+            final int unitColNum = 8;
             
             JLabel name = new JLabel("Unit Name:");
+            c.gridx = 0;
+            c.gridy = 0;
+            c.anchor = GridBagConstraints.EAST;
+            pane.add(name,c);
             final JTextField unit_name;
+            
             JLabel credit_pts = new JLabel("Number of Credit Points:");
+            c.gridx = 0;
+            c.gridy = 1;
+            pane.add(credit_pts,c);
             final JTextField credit_points;
+            
             JButton add_button = new JButton("Add Unit");
+            c.gridx = 0;
+            c.gridy = 2;
+            pane.add(add_button,c);
             JButton remove_button = new JButton("Remove Unit");
+            c.gridx = 1;
+            c.gridy = 2;
+            pane.add(remove_button,c);
             
             if (index < 0) {
                 unit_name = new JTextField("Unit Name");
+                unit_name.setColumns(unitColNum);
+                c.gridx = 1;
+                c.gridy = 0;
+                pane.add(unit_name,c);
                 credit_points = new JTextField("Credit Points");
+                credit_points.setColumns(unitColNum);
+                c.gridx = 1;
+                c.gridy = 1;
+                pane.add(credit_points,c);
                 remove_button.setEnabled(false);
                 add_button.addActionListener(new ActionListener() {
                     @Override
@@ -206,7 +233,7 @@ public class MyUniTrackerGUI extends JFrame {
                         if (!unit_name.getText().equals("Unit Name") && !credit_points.getText().equals("Credit Points")) {
                             Unit u = new Unit(unit_name.getText(), (int) Integer.parseInt(credit_points.getText()));
                             MyUniTracker.units.add(u);
-                            UnitsPanel up = new org.main.gui.UnitsPanel(MyUniTracker.units.size()-1,width,height,CP);
+                            UnitsPanel up = new org.main.gui.UnitsPanel(u,width,height,CP);
                             up.setVisible(true);
                             tab.insertTab(u.getName(),null,up,null,tab.getTabCount()-1);
                             close();
@@ -215,7 +242,15 @@ public class MyUniTrackerGUI extends JFrame {
                 });
             } else if (index < MyUniTracker.units.size()) {
                 unit_name = new JTextField(tab.getTitleAt(tab.getSelectedIndex()));
+                unit_name.setColumns(unitColNum);
+                c.gridx = 1;
+                c.gridy = 0;
+                pane.add(unit_name,c);
                 credit_points = new JTextField(String.valueOf(MyUniTracker.units.get(tab.getSelectedIndex()).getCreditPoints()));
+                credit_points.setColumns(unitColNum);
+                c.gridx = 1;
+                c.gridy = 1;
+                pane.add(credit_points,c);
                 remove_button.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
@@ -231,7 +266,7 @@ public class MyUniTrackerGUI extends JFrame {
                         if (!unit_name.getText().equals("Unit Name") && !credit_points.getText().equals("Credit Points")) {
                             Unit u = new Unit(unit_name.getText(), (int) Integer.parseInt(credit_points.getText()));
                             MyUniTracker.units.add(u);
-                            UnitsPanel up = new org.main.gui.UnitsPanel(MyUniTracker.units.size()-1,width,height,CP);
+                            UnitsPanel up = new org.main.gui.UnitsPanel(u,width,height,CP);
                             up.setVisible(true);
                             tab.insertTab(u.getName(),null,up,null,tab.getTabCount()-1);
                             close();
@@ -240,7 +275,15 @@ public class MyUniTrackerGUI extends JFrame {
                 });
             } else {
                 unit_name = new JTextField("Unit Name");
+                unit_name.setColumns(unitColNum);
+                c.gridx = 1;
+                c.gridy = 0;
+                pane.add(unit_name,c);
                 credit_points = new JTextField("Credit Points");
+                credit_points.setColumns(unitColNum);
+                c.gridx = 1;
+                c.gridy = 1;
+                pane.add(credit_points,c);
                 remove_button.setEnabled(false);
                 add_button.addActionListener(new ActionListener() {
                     @Override
@@ -248,7 +291,7 @@ public class MyUniTrackerGUI extends JFrame {
                         if (!unit_name.getText().equals("Unit Name") && !credit_points.getText().equals("Credit Points")) {
                             Unit u = new Unit(unit_name.getText(), (int) Integer.parseInt(credit_points.getText()));
                             MyUniTracker.units.add(u);
-                            UnitsPanel up = new org.main.gui.UnitsPanel(MyUniTracker.units.size()-1,width,height,CP);
+                            UnitsPanel up = new org.main.gui.UnitsPanel(u,width,height,CP);
                             up.setVisible(true);
                             tab.insertTab(u.getName(),null,up,null,tab.getTabCount()-1);
                             close();
@@ -262,16 +305,10 @@ public class MyUniTrackerGUI extends JFrame {
                 public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 }
             });
-            
-            pane.add(name);
-            pane.add(unit_name);
-            pane.add(credit_pts);
-            pane.add(credit_points);
-            pane.add(add_button);
-            pane.add(remove_button);
+  
             add(pane);
         }
         
-        private void close() { this.setVisible(false); this.dispose();}
+        private void close() { this.setVisible(false); this.dispose(); CP.updatePanel(); CP.updateGraph();}
     }
 }

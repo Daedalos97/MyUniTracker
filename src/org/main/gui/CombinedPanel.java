@@ -59,7 +59,7 @@ public class CombinedPanel extends JPanel {
     private JTextArea text;
     
     public CombinedPanel(double gpa, double expectGPA) {
-        this.setVisible(true);
+        this.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR);
         JPanel cjp = new JPanel();
         cjp.setLayout(new BoxLayout(cjp,BoxLayout.Y_AXIS));
         
@@ -80,12 +80,13 @@ public class CombinedPanel extends JPanel {
             }
         });
         
-        summary.add(sum, BorderLayout.CENTER);
+        summary.add(sum);
         summary.add(text);
         summary.add(addPastUnit);
         cjp.add(fxPanel);
         cjp.add(summary);
         add(cjp);
+        this.setVisible(true);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -113,7 +114,7 @@ public class CombinedPanel extends JPanel {
         //creating the chart
         lineChart = new LineChart(xAxis,yAxis);
         lineChart.setTitle("All Units");
-        //defining a series
+        //Defining a series
         for (Unit m : MyUniTracker.units) {
             XYChart.Series series = new XYChart.Series();
             series.setName(m.getName());
@@ -124,7 +125,7 @@ public class CombinedPanel extends JPanel {
             data.add(series);
             lineChart.getData().add(series);
         }
-        Scene scene = new Scene(lineChart,880,600);
+        Scene scene = new Scene(lineChart,800,592);
         Platform.setImplicitExit(false);
        
         return scene;

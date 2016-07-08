@@ -24,8 +24,10 @@
 
 package org.main.gui;
 
-import javax.swing.BoxLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import javax.swing.JPanel;
+import org.main.myunitracker.Unit;
 
 /**
  * @author Samuel Heath
@@ -40,18 +42,27 @@ public class UnitsPanel extends JPanel {
     giving statistics such as your current mark and grade.
     Allow users to add assessments and to edit them.
     */
-    public UnitsPanel(int index, int WIDTH, int HEIGHT, CombinedPanel combinedPanel) {
+    public UnitsPanel(Unit unit, int WIDTH, int HEIGHT, CombinedPanel combinedPanel) {
         this.setSize(WIDTH, HEIGHT);
         //setLayout(new GridBagLayout());
         this.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR);
-        
-        gp = new GraphPanel(index);
         this.cp = combinedPanel;
+        
         JPanel p = new JPanel();
-        p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));
-        FormPanel fp = new FormPanel(index,gp,cp);
-        p.add(gp);
-        p.add(fp);
+        p.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        
+        FormPanel fp = new FormPanel(unit,gp,cp);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        p.add(fp,gbc);
+        
+        gp = new GraphPanel(unit);
+        gbc.gridheight = 4;
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        p.add(gp,gbc);
+        
         add(p);
         this.setVisible(true);
     }
