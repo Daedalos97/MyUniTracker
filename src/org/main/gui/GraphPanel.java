@@ -34,21 +34,19 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 import javafx.application.Platform;
-import org.main.myunitracker.MyUniTracker;
 import org.main.myunitracker.Unit;
 
 
 /**
- *
  * @author Samuel Heath
  */
 public class GraphPanel extends JPanel {
     
     private XYChart.Series series;
+    private LineChart<String,Number> lineChart;
     private Unit unit;
     
     public GraphPanel(Unit u) {
-        this.setSize(200, 300);
         this.setVisible(true);
         final JFXPanel fxPanel = new JFXPanel();
         this.unit = u;
@@ -78,7 +76,7 @@ public class GraphPanel extends JPanel {
         yAxis.setLabel("Marks (%)");
         yAxis.setUpperBound(100.0);
         //creating the chart
-        final LineChart<String,Number> lineChart = new LineChart(xAxis,yAxis);
+        lineChart = new LineChart(xAxis,yAxis);
         lineChart.setTitle(unit.getName() + " Progress");
         lineChart.setStyle(".default-color0.chart-series-line { -fx-stroke: #f0e68c; }");
         //defining a series
@@ -88,7 +86,7 @@ public class GraphPanel extends JPanel {
             if (!a.getAssessmentName().equals("Final Exam")) 
             series.getData().add(new XYChart.Data(a.getAssessmentName(),(a.getPercentage())));
         }
-        Scene scene = new Scene(lineChart,800,592);
+        Scene scene = new Scene(lineChart,804,600);
         lineChart.getData().add(series);
         Platform.setImplicitExit(false);
        
@@ -100,6 +98,7 @@ public class GraphPanel extends JPanel {
         Platform.runLater(new Runnable() {
             @Override public void run() {
                 series.getData().clear();
+                series.setName(unit.getName());
                 for (Assessment a : unit.getAssessments()) {
                     if (!a.getAssessmentName().equals("Final Exam")) {
                         series.getData().add(new XYChart.Data(a.getAssessmentName(),(a.getPercentage())));
@@ -107,5 +106,7 @@ public class GraphPanel extends JPanel {
                 }
             }
         });
+        lineChart.setTitle(unit.getName());
+        this.repaint();
     }
 }

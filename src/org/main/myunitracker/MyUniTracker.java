@@ -53,8 +53,7 @@ public class MyUniTracker {
                 default: sum+= 0.0; break;
             }
         }
-        GPA = sum/credit;
-        return GPA;
+        return (double)Math.round(sum/credit*1000d)/1000d;
     }
     
     public static double expectedGPA() {
@@ -119,21 +118,6 @@ public class MyUniTracker {
      */
     public ArrayList<Unit> getGrades() { return this.past_units; }
     
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        //If directory does have a text file, read it. Else Dont
-        long time = System.currentTimeMillis();
-        UnitReader UR = new UnitReader();
-        UR.readUnits();
-        units = UR.getUnits();
-        past_units = UR.getGrades();
-        MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",1097,700);
-        System.out.println(System.currentTimeMillis() - time);
-        //System.exit(-1);
-    }
-    
     public static void writeToFile() {
         System.out.println();
         try {
@@ -165,5 +149,20 @@ public class MyUniTracker {
             }
             b.close();
         } catch (IOException IOE) { IOE.printStackTrace(); }
+    }
+    
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        //If directory does have a text file, read it. Else Dont
+        long time = System.currentTimeMillis();
+        UnitReader UR = new UnitReader();
+        UR.readUnits();
+        units = UR.getUnits();
+        past_units = UR.getGrades();
+        MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",1118,688);
+        System.out.println(System.currentTimeMillis() - time);
+        //System.exit(-1);
     }
 }

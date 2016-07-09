@@ -58,9 +58,10 @@ import org.main.myunitracker.MyUniTracker;
 public class MyUniTrackerGUI extends JFrame {
     
     final int width,height;
-    private JTabbedPane tab;
-    private CombinedPanel CP;
+    private static JTabbedPane tab;
+    private static CombinedPanel CP;
     public static final Color BACKGROUND_COLOUR = Color.decode("#83C0E6");
+    public static final Color BACKGROUND_COLOUR01 = Color.decode("#D9B679");
     //D9B679, White, 83C0E6, E6A983
     
     /**
@@ -99,22 +100,7 @@ public class MyUniTrackerGUI extends JFrame {
         }
         window.setVisible(false);
         
-        JPanel p = new JPanel();
         tab = new JTabbedPane();
-        
-        JMenuBar menu_bar = new JMenuBar();
-        JMenu menu = new JMenu("File");
-        JMenuItem mi0 = new JMenuItem("Change Unit");
-        
-        mi0.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                Dialog d = new Dialog(MyUniTracker.units.size()-1);                                                                                                      
-            }
-        });
-        
-        menu.add(mi0);
-        menu_bar.add(menu);
         
         this.addWindowListener(new WindowAdapter(){
             @Override
@@ -125,23 +111,30 @@ public class MyUniTrackerGUI extends JFrame {
         );
         
         init();
-        this.setJMenuBar(menu_bar);
         add(tab);
         this.setResizable(true);
         setVisible(true);
     }
     
+    public static JTabbedPane getTabbedPane() {
+        return tab;
+    }
+    
+    public static CombinedPanel getCombinedPanel() {
+        return CP;
+    }
+    
     private void init() {
         for (int i = 0; i < tab.getTabCount(); i++)
             tab.removeTabAt(i);
-        CP = new CombinedPanel(MyUniTracker.calculateGPA(),MyUniTracker.expectedGPA());
+        CP = new CombinedPanel();
         for (int i = 0; i < MyUniTracker.units.size(); i++) {
             org.main.gui.UnitsPanel up = new org.main.gui.UnitsPanel(MyUniTracker.units.get(i),width,height,CP);
             up.setVisible(true);
             tab.addTab(MyUniTracker.units.get(i).getName(),up);
         }
         
-        tab.add("Summary",CP);
+        tab.add("Overview",CP);
         add(tab);
     }
     

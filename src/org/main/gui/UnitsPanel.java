@@ -24,8 +24,10 @@
 
 package org.main.gui;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import javax.swing.JPanel;
 import org.main.myunitracker.Unit;
 
@@ -36,6 +38,7 @@ public class UnitsPanel extends JPanel {
     
     private GraphPanel gp;
     private CombinedPanel cp;
+    public int tabIndex = 0;
     
     /*
     Make it so that the Form Panel has a table of the assessments, as well as
@@ -44,24 +47,28 @@ public class UnitsPanel extends JPanel {
     */
     public UnitsPanel(Unit unit, int WIDTH, int HEIGHT, CombinedPanel combinedPanel) {
         this.setSize(WIDTH, HEIGHT);
-        //setLayout(new GridBagLayout());
         this.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR);
         this.cp = combinedPanel;
         
-        JPanel p = new JPanel();
-        p.setLayout(new GridBagLayout());
+        JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        
-        FormPanel fp = new FormPanel(unit,gp,cp);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        p.add(fp,gbc);
+        p.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
         
         gp = new GraphPanel(unit);
-        gbc.gridheight = 4;
+        gp.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+        gbc.gridheight = 2;
         gbc.gridx = 1;
         gbc.gridy = 0;
         p.add(gp,gbc);
+        
+        FormPanel fp = new FormPanel(unit,gp,cp);
+        fp.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(-5,5,0,0);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        p.add(fp,gbc);
         
         add(p);
         this.setVisible(true);
