@@ -52,20 +52,19 @@ public class UnitsPanel extends JPanel {
         
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        p.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+        p.setBackground(Color.decode("#eeeeee"));
         
         gp = new GraphPanel(unit);
-        gp.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+        gp.setBackground(Color.decode("#eeeeee"));
         gbc.gridheight = 2;
         gbc.gridx = 1;
         gbc.gridy = 0;
         p.add(gp,gbc);
         
         FormPanel fp = new FormPanel(unit,gp,cp);
-        fp.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.anchor = GridBagConstraints.EAST;
-        gbc.insets = new Insets(-5,5,0,0);
+        fp.setBackground(Color.decode("#eeeeee"));
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.insets = new Insets(0,5,5,0);
         gbc.gridx = 0;
         gbc.gridy = 0;
         p.add(fp,gbc);

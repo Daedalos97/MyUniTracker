@@ -63,8 +63,11 @@ public class UnitReader {
         Assessment a = new Assessment(null,0.0,0.0,0.0);
         while (scan.hasNextLine()) {
             String[] sub = scan.nextLine().split(" ");
-            if (sub[0].contains("[Unit]") && !u.getName().equals(sub[1])) {
+            if (sub[0].contains("[Unit]") && !u.getUnitName().equals(sub[1])) {
                     u = new Unit(sub[1], Integer.parseInt(sub[2]));
+                    if (sub.length > 3 && sub[3].equals("CORE")) {
+                        u.setCoreUnit(true);
+                    } else u.setCoreUnit(false);
                     units.add(u);
             } else if (sub[0].contains("[Assessment]")) {
                 a = new Assessment(sub[1],0.0,0.0,0.0);
@@ -80,6 +83,12 @@ public class UnitReader {
                 u.addAssessment(a);
             } else if (sub[0].contains("[Past-Grade]")) {
                 u = new Unit(sub[1],Integer.parseInt(sub[4]));
+                if (sub.length > 5 && sub[5].equals("CORE")) {
+                    u.setCoreUnit(true);
+                } else {
+                    u.setCoreUnit(false);
+                }
+                
                 u.setFinalGrade(sub[2]);
                 u.setFinalMark(Double.parseDouble(sub[3]));
                 past_units.add(u);   
@@ -106,7 +115,7 @@ public class UnitReader {
         for (int i = 0; i < units.size(); i++) {
             Unit u = units.get(i);
             System.out.println();
-            System.out.println("Unit: " + u.getName() + ":");
+            System.out.println("Unit: " + u.getUnitName() + ":");
             for (int j = 0; j < units.get(i).getAssessments().size(); j++) {
                 System.out.println(units.get(i).getAssessments().get(j).toString());
             }

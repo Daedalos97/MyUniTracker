@@ -46,6 +46,8 @@ public class Unit {
     private double exam_weight; //weight for the final assessment (exam)
     private boolean hasFinal = false;
     private double final_mark;
+    private boolean displayOverview = true;
+    private boolean isCore;
     
     /**
      * Creates the unit object by initialising it.
@@ -67,7 +69,7 @@ public class Unit {
     
     public void setUnitName(String new_name) { this.UnitName = new_name; }
     
-    public String getName() { return this.UnitName; }
+    public String getUnitName() { return this.UnitName; }
     
     public void setCreditPoints(int new_creditPoints) { this.credit_points = new_creditPoints; }
     
@@ -109,6 +111,25 @@ public class Unit {
     
     public void setFinalGrade(String s) { this.final_grade = s; }
     
+    public void setIsDisplayed(boolean b) { this.displayOverview = b; }
+    
+    /**
+     * @return Check whether or not the unit is displayed in the Overview panel
+     */
+    public boolean isDisplayed() { return this.displayOverview; }
+    
+    public boolean isCoreUnit() { return this.isCore; }
+    
+    public void setCoreUnit(boolean isCoreUnit) { this.isCore = isCoreUnit; }
+    
+    public boolean hasMaxWeighting(double new_weighting) {
+        double total_weighting = new_weighting + this.completed_weight;
+        if (total_weighting <= 100.0) {
+            return false;
+        }
+        return true;
+    }
+    
     /**
      * Calculates the percentage the user requires in the final exam, to get the
      * input grade.
@@ -117,7 +138,7 @@ public class Unit {
      */
     public double percentForGrade(String grade) {
         double mark_needed = 0.0;
-        if (exam_weight <= 0.01) return 0.0;
+        if (!hasFinal()) return 0.0;
         else {
             switch (grade) {
                 case "N": mark_needed = 43.6d; break;
@@ -163,5 +184,4 @@ public class Unit {
             this.percentage = (double)Math.round(((79.6-weightedMark)/(finalExamWeighting/100.0))*1000d)/1000d;
         }
     }
-    
 }

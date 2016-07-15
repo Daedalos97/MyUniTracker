@@ -38,7 +38,6 @@ public class MyUniTracker {
     public static ArrayList<Unit> past_units;
     public static double GPA;
     public static double WAM;
-    private static String path = "src/units.txt";
     
     public static double calculateGPA() {
         double credit = 0.0;
@@ -84,12 +83,23 @@ public class MyUniTracker {
         return (double)Math.round(total_sum/(double)total_credit*1000d)/1000d;
     }
     
-    public static double calculateWAM() {
+    /**
+     * @param majorWAM says whether or not we are looking at only core units
+     * @return The WAM current WAM for the major.
+     */
+    public static double calculateWAM(boolean majorWAM) {
         double credit = 0.0;
         double sum = 0.0;
         for (int i = 0; i < past_units.size(); i++) {
-            sum += past_units.get(i).getFinalMark()*past_units.get(i).getCreditPoints();
-            credit += past_units.get(i).getCreditPoints();
+            if (majorWAM) {
+                if (past_units.get(i).isCoreUnit()) {
+                    sum += past_units.get(i).getFinalMark()*past_units.get(i).getCreditPoints();
+                    credit += past_units.get(i).getCreditPoints();
+                }
+            } else {
+                sum += past_units.get(i).getFinalMark()*past_units.get(i).getCreditPoints();
+                credit += past_units.get(i).getCreditPoints();
+            }
         }
         return (double)Math.round(sum/credit*1000d)/1000d;
     }
@@ -129,7 +139,10 @@ public class MyUniTracker {
             BufferedWriter b = new BufferedWriter(fw);
             for (Unit u : units) {
                 b.newLine();
-                b.write("[Unit] " + u.getName() + " " + u.getCreditPoints());
+                String s = "";
+                if (u.isCoreUnit())
+                    s = "CORE";
+                b.write("[Unit] " + u.getUnitName() + " " + u.getCreditPoints() + " " + s);
                 b.newLine();
                 for (Assessment a : u.getAssessments()) {
                     if (!a.getAssessmentName().equals("Final Exam"))
@@ -144,11 +157,21 @@ public class MyUniTracker {
             }
             
             for (Unit u: past_units) {
+                String s = "";
+                if (u.isCoreUnit())
+                    s = " CORE";
                 b.newLine();
-                b.write("[Past-Grade] " + u.getName() + " " + u.getFinalGrade() + " " + u.getFinalMark() + " " + u.getCreditPoints()); //Conncating is shit
+                b.write("[Past-Grade] " + u.getUnitName() + " " + u.getFinalGrade() + " " + u.getFinalMark() + " " + u.getCreditPoints() + s); //Conncating is shit
             }
             b.close();
         } catch (IOException IOE) { IOE.printStackTrace(); }
+    }
+    
+    public static Unit findResult(String past_result) {
+        for (Unit u : past_units) {
+            if (u.getUnitName().equals(past_result)) return u;
+        }
+        return null;
     }
     
     /**
@@ -163,6 +186,7 @@ public class MyUniTracker {
         past_units = UR.getGrades();
         MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",1118,688);
         System.out.println(System.currentTimeMillis() - time);
+        System.out.println(calculateWAM(true));
         //System.exit(-1);
     }
 }

@@ -77,7 +77,7 @@ public class GraphPanel extends JPanel {
         yAxis.setUpperBound(100.0);
         //creating the chart
         lineChart = new LineChart(xAxis,yAxis);
-        lineChart.setTitle(unit.getName() + " Progress");
+        lineChart.setTitle(unit.getUnitName() + " Progress");
         lineChart.setStyle(".default-color0.chart-series-line { -fx-stroke: #f0e68c; }");
         //defining a series
         series = new XYChart.Series();
@@ -86,7 +86,8 @@ public class GraphPanel extends JPanel {
             if (!a.getAssessmentName().equals("Final Exam")) 
             series.getData().add(new XYChart.Data(a.getAssessmentName(),(a.getPercentage())));
         }
-        Scene scene = new Scene(lineChart,804,600);
+        Scene scene = new Scene(lineChart,826,600);
+        lineChart.setLegendVisible(false);
         lineChart.getData().add(series);
         Platform.setImplicitExit(false);
        
@@ -98,7 +99,7 @@ public class GraphPanel extends JPanel {
         Platform.runLater(new Runnable() {
             @Override public void run() {
                 series.getData().clear();
-                series.setName(unit.getName());
+                series.setName(unit.getUnitName());
                 for (Assessment a : unit.getAssessments()) {
                     if (!a.getAssessmentName().equals("Final Exam")) {
                         series.getData().add(new XYChart.Data(a.getAssessmentName(),(a.getPercentage())));
@@ -106,7 +107,6 @@ public class GraphPanel extends JPanel {
                 }
             }
         });
-        lineChart.setTitle(unit.getName());
         this.repaint();
     }
 }
