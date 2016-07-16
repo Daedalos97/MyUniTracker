@@ -58,6 +58,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 import org.main.myunitracker.MyUniTracker;
 import java.awt.event.WindowAdapter;
+import javax.swing.SwingUtilities;
 
 /*
 int gridx,int gridy,int gridwidth,int gridheight,double weightx, double weighty,
@@ -71,396 +72,407 @@ public class CombinedPanel extends JPanel {
     
     private ArrayList<Unit> checkUnits;
     private ArrayList<XYChart.Series> data;
-    private Font fontTitle = new Font("Arial", Font.PLAIN, 14), fontSubTitle = new Font("Arial", Font.PLAIN,13), fontText = new Font("Arial", Font.PLAIN,12);
     private JButton removePast_result, editPast_result;
     private JComboBox past_unitsCB;
     private JLabel cur_wam,expect_wam,core_wam,cur_gpa,expect_gpa,core_expectwam;
     private JPanel checkBoxPanel;
     private JTabbedPane tab;
+    private Font fontTitle = MyUniTrackerGUI.fontTitle, fontSubTitle = MyUniTrackerGUI.fontSubTitle, fontText = MyUniTrackerGUI.fontText;
     private LineChart<String,Number> lineChart;
     private Map<JCheckBox,String> checkMap;
     
     public CombinedPanel() {
         this.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR);
-        
         tab = MyUniTrackerGUI.getTabbedPane();
         
-        JPanel combinedGraphPanel = new JPanel();
-        combinedGraphPanel.setBackground(Color.decode("#eeeeee")); //Color.decode("#e0e0e0")
-        combinedGraphPanel.setLayout(new GridBagLayout());
-        
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5,5,0,0);
-        
-        JPanel statsPanel = new JPanel(new GridBagLayout());
-        statsPanel.setBackground(java.awt.Color.WHITE);
-        statsPanel.setBorder(BorderFactory.createTitledBorder("Statistics"));
-        ((javax.swing.border.TitledBorder) statsPanel.getBorder()).setTitleFont(fontTitle);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        combinedGraphPanel.add(statsPanel,gbc);
-        
-        JPanel unitPanel = new JPanel(new GridBagLayout());
-        unitPanel.setBackground(java.awt.Color.WHITE);
-        unitPanel.setBorder(BorderFactory.createTitledBorder("Add Units"));
-        ((javax.swing.border.TitledBorder) unitPanel.getBorder()).setTitleFont(fontTitle);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        combinedGraphPanel.add(unitPanel,gbc);
-        
-        JPanel pastPanel = new JPanel(new GridBagLayout());
-        pastPanel.setBackground(java.awt.Color.WHITE);
-        pastPanel.setBorder(BorderFactory.createTitledBorder("Past Results"));
-        ((javax.swing.border.TitledBorder) pastPanel.getBorder()).setTitleFont(fontTitle);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.NORTH;
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        combinedGraphPanel.add(pastPanel,gbc);
-        
-        checkBoxPanel = new JPanel(new GridBagLayout());
-        checkBoxPanel.setBackground(java.awt.Color.WHITE);
-        checkBoxPanel.setBorder(BorderFactory.createTitledBorder("Display Units"));
-        ((javax.swing.border.TitledBorder) checkBoxPanel.getBorder()).setTitleFont(fontTitle);
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        combinedGraphPanel.add(checkBoxPanel,gbc);
-        
-        final JFXPanel fxPanel = new JFXPanel();
-        JPanel graphPanel = new JPanel(new GridBagLayout());
-        gbc.insets = new Insets(5,5,5,5);
-        gbc.gridheight = 4;
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        fxPanel.setBackground(Color.decode("#eeeeee"));
-        graphPanel.add(fxPanel);
-        combinedGraphPanel.add(graphPanel,gbc);
-        
-        GridBagConstraints gbcStats = new GridBagConstraints();
-        gbcStats.fill = GridBagConstraints.HORIZONTAL;
-        gbcStats.insets = new Insets(3,0,0,3);
-        
-        /*
-         * Sub Panel of Stats For WAM
-         */
-        JPanel wamPanel = new JPanel(new GridBagLayout());
-        wamPanel.setBackground(java.awt.Color.WHITE);
-        wamPanel.setBorder(BorderFactory.createTitledBorder("Weighted Average Mark"));
-        ((javax.swing.border.TitledBorder) wamPanel.getBorder()).setTitleFont(fontSubTitle);
-        gbcStats.fill = GridBagConstraints.HORIZONTAL;
-        gbcStats.anchor = GridBagConstraints.WEST;
-        gbcStats.gridx = 0;
-        gbcStats.gridy = 0;
-        statsPanel.add(wamPanel,gbcStats);
-        
-        GridBagConstraints gbcWAM = new GridBagConstraints();
-        gbcWAM.insets = new Insets(3,3,3,3);
-        
-        JLabel wamLabel = new JLabel("Current WAM:");
-        wamLabel.setFont(fontText);
-        gbcWAM.anchor = GridBagConstraints.EAST;
-        gbcWAM.gridx = 0;
-        gbcWAM.gridy = 0;
-        wamPanel.add(wamLabel,gbcWAM);
-        cur_wam = new JLabel(String.valueOf(MyUniTracker.calculateWAM(false)));
-        cur_wam.setFont(fontText);
-        gbcWAM.anchor = GridBagConstraints.WEST;
-        gbcWAM.gridx = 1;
-        gbcWAM.gridy = 0;
-        wamPanel.add(cur_wam,gbcWAM);
-        JLabel expect_wamLabel = new JLabel("Expected WAM (cur. units):");
-        expect_wamLabel.setFont(fontText);
-        gbcWAM.anchor = GridBagConstraints.EAST;
-        gbcWAM.gridx = 0;
-        gbcWAM.gridy = 1;
-        wamPanel.add(expect_wamLabel,gbcWAM);
-        expect_wam = new JLabel(String.valueOf(MyUniTracker.expectedWAM(false)));
-        expect_wam.setFont(fontText);
-        gbcWAM.anchor = GridBagConstraints.WEST;
-        gbcWAM.gridx = 1;
-        gbcWAM.gridy = 1;
-        wamPanel.add(expect_wam,gbcWAM);
-        JLabel core_wamLabel = new JLabel("Current WAM (Major/s):");
-        core_wamLabel.setFont(fontText);
-        gbcWAM.anchor = GridBagConstraints.EAST;
-        gbcWAM.gridx = 0;
-        gbcWAM.gridy = 2;
-        wamPanel.add(core_wamLabel,gbcWAM);
-        core_wam = new JLabel(String.valueOf(MyUniTracker.calculateWAM(true)));
-        core_wam.setFont(fontText);
-        gbcWAM.anchor = GridBagConstraints.WEST;
-        gbcWAM.gridx = 1;
-        gbcWAM.gridy = 2;
-        wamPanel.add(core_wam,gbcWAM);
-        JLabel core_expectwamLabel = new JLabel("Expected WAM (Major/s):");
-        core_expectwamLabel.setFont(fontText);
-        gbcWAM.anchor = GridBagConstraints.EAST;
-        gbcWAM.gridx = 0;
-        gbcWAM.gridy = 3;
-        wamPanel.add(core_expectwamLabel,gbcWAM);
-        core_expectwam = new JLabel(String.valueOf(MyUniTracker.expectedWAM(true)));
-        core_expectwam.setFont(fontText);
-        gbcWAM.anchor = GridBagConstraints.WEST;
-        gbcWAM.gridx = 1;
-        gbcWAM.gridy = 3;
-        wamPanel.add(core_expectwam,gbcWAM);
-        
-        /*
-         * Sub Panel of Stats For GPA
-         */
-        
-        JPanel gpaPanel = new JPanel(new GridBagLayout());
-        gpaPanel.setBackground(java.awt.Color.WHITE);
-        gpaPanel.setBorder(BorderFactory.createTitledBorder("Grade Point Average"));
-        ((javax.swing.border.TitledBorder) gpaPanel.getBorder()).setTitleFont(fontSubTitle);
-        gbcStats.fill = GridBagConstraints.HORIZONTAL;
-        gbcStats.gridx = 0;
-        gbcStats.gridy = 1;
-        statsPanel.add(gpaPanel,gbcStats);
-        
-        GridBagConstraints gbcGPA = new GridBagConstraints();
-        gbcGPA.insets = new Insets(3,3,3,3);
-        
-        JLabel gpaLabel = new JLabel("Current GPA:");
-        gpaLabel.setFont(fontText);
-        gbcGPA.anchor = GridBagConstraints.EAST;
-        gbcGPA.gridx = 0;
-        gbcGPA.gridy = 0;
-        gpaPanel.add(gpaLabel,gbcGPA);
-        cur_gpa = new JLabel(String.valueOf(MyUniTracker.calculateGPA()));
-        cur_gpa.setFont(fontText);
-        gbcGPA.anchor = GridBagConstraints.WEST;
-        gbcGPA.gridx = 1;
-        gbcGPA.gridy = 0;
-        gpaPanel.add(cur_gpa,gbcGPA);
-        JLabel expect_gpaLabel = new JLabel("Expected GPA (cur. units):");
-        expect_gpaLabel.setFont(fontText);
-        gbcGPA.anchor = GridBagConstraints.EAST;
-        gbcGPA.gridx = 0;
-        gbcGPA.gridy = 1;
-        gpaPanel.add(expect_gpaLabel,gbcGPA);
-        expect_gpa = new JLabel(String.valueOf(MyUniTracker.expectedGPA()));
-        expect_gpa.setFont(fontText);
-        gbcGPA.anchor = GridBagConstraints.WEST;
-        gbcGPA.gridx = 1;
-        gbcGPA.gridy = 1;
-        gpaPanel.add(expect_gpa,gbcGPA);
-        
-        /*
-         * Layout for unit panel
-         */
-        
-        GridBagConstraints gbcUnit = new GridBagConstraints();
-        gbcUnit.insets = new Insets(3,3,3,3);
-        
-        JLabel name = new JLabel("Unit Name:");
-        name.setFont(fontText);
-        gbcUnit.gridx = 0;
-        gbcUnit.gridy = 0;
-        gbcUnit.anchor = GridBagConstraints.EAST;
-        unitPanel.add(name,gbcUnit);
-        
-        final JTextField unit_name = new JTextField("Unit Name");
-        unit_name.setToolTipText("Enter the name of the unit wish to add");
-        unit_name.setFont(fontText);
-        unit_name.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-        gbcUnit.fill = GridBagConstraints.HORIZONTAL;
-        gbcUnit.gridx = 1;
-        gbcUnit.gridy = 0;
-        unitPanel.add(unit_name,gbcUnit);
-        gbcUnit.fill = GridBagConstraints.NONE;
-
-        JLabel credit_pts = new JLabel("No. Credit Points:");
-        credit_pts.setToolTipText("Enter the number of credit points for this unit");
-        credit_pts.setFont(fontText);
-        gbcUnit.gridx = 0;
-        gbcUnit.gridy = 1;
-        unitPanel.add(credit_pts,gbcUnit);
-        
-        final JTextField credit_points = new JTextField(String.valueOf(MyUniTracker.DEFAULT_CREDIT));
-        credit_points.setFont(fontText);
-        credit_points.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-        gbcUnit.fill = GridBagConstraints.HORIZONTAL;
-        gbcUnit.gridx = 1;
-        gbcUnit.gridy = 1;
-        unitPanel.add(credit_points,gbcUnit);
-        gbcUnit.fill = GridBagConstraints.NONE;
-        
-        JLabel core_unit = new JLabel("Is core unit:");
-        core_unit.setFont(fontText);
-        gbcUnit.gridx = 0;
-        gbcUnit.gridy = 2;
-        unitPanel.add(core_unit,gbcUnit);
-        
-        final JCheckBox core_unitCheck = new JCheckBox();
-        core_unitCheck.setSelected(true);
-        core_unitCheck.setBackground(Color.WHITE);
-        gbcUnit.anchor = GridBagConstraints.WEST;
-        gbcUnit.gridx = 1;
-        unitPanel.add(core_unitCheck,gbcUnit);
-        
-        JLabel curtin_student = new JLabel("Is Curtin Student:");
-        curtin_student.setFont(fontText);
-        gbcUnit.anchor = GridBagConstraints.EAST;
-        gbcUnit.gridx = 0;
-        gbcUnit.gridy = 4;
-        unitPanel.add(curtin_student,gbcUnit);
-        
-        final JCheckBox iscurtin_student = new JCheckBox();
-        iscurtin_student.setSelected(MyUniTracker.isCurtin());
-        iscurtin_student.setBackground(Color.WHITE);
-        gbcUnit.anchor = GridBagConstraints.WEST;
-        gbcUnit.gridx = 1;
-        unitPanel.add(iscurtin_student,gbcUnit);
-        
-        JButton add_button = new JButton("Add Unit");
-        add_button.setFont(fontText);
-        add_button.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-        add_button.setToolTipText("Add unit based on above information");
-        //gbcUnit.fill = GridBagConstraints.HORIZONTAL;
-        gbcUnit.anchor = GridBagConstraints.CENTER;
-        gbcUnit.gridwidth = 2;
-        gbcUnit.gridx = 0;
-        gbcUnit.gridy = 3;
-        unitPanel.add(add_button,gbcUnit);
-        
-        gbcUnit.gridwidth = 1;
-        
-        /*
-         Layout for past results panel.
-        */
-        
-        GridBagConstraints gbcPast = new GridBagConstraints();
-        gbcPast.insets = new Insets(3,3,3,3);
-        
-        JLabel past_resultLabel = new JLabel("Add Past Results:");
-        past_resultLabel.setFont(fontText);
-        gbcPast.anchor = GridBagConstraints.EAST;
-        gbcPast.gridx = 0;
-        gbcPast.gridy = 1;
-        pastPanel.add(past_resultLabel,gbcPast);
-        gbcPast.anchor = GridBagConstraints.CENTER;
-        
-        JButton addPastResult = new JButton("Add Results");
-        addPastResult.setFont(fontText);
-        addPastResult.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-        addPastResult.setToolTipText("Click to add previous results");
-        gbcPast.fill = GridBagConstraints.HORIZONTAL;
-        gbcPast.anchor = GridBagConstraints.WEST;
-        gbcPast.gridx = 1;
-        gbcPast.gridy = 1;
-        pastPanel.add(addPastResult,gbcPast);
-        gbcPast.fill = GridBagConstraints.NONE;
-        
-        String[] past_unit_data = new String[MyUniTracker.past_results.size()];
-        for (int i = 0; i < past_unit_data.length; i++) {
-            past_unit_data[i] = MyUniTracker.past_results.get(i).getUnitName();
-        }
-        
-        JLabel past_unitLabel = new JLabel("Result:");
-        past_unitLabel.setFont(fontText);
-        gbcPast.anchor = GridBagConstraints.EAST;
-        gbcPast.gridx = 0;
-        gbcPast.gridy = 2;
-        pastPanel.add(past_unitLabel,gbcPast);
-        
-        gbcPast.fill = GridBagConstraints.HORIZONTAL;
-        
-        editPast_result = new JButton("Edit Result");
-        editPast_result.setFont(fontText);
-        editPast_result.setToolTipText("Click to edit the selected result");
-        gbcPast.gridx = 0;
-        gbcPast.gridy = 3;
-        pastPanel.add(editPast_result,gbcPast);
-        
-        removePast_result = new JButton("Remove Result");
-        removePast_result.setFont(fontText);
-        removePast_result.setToolTipText("Click to remove the selected result");
-        gbcPast.gridx = 1;
-        pastPanel.add(removePast_result,gbcPast);
-        
-        past_unitsCB = new JComboBox(past_unit_data);
-        past_unitsCB.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (past_unitsCB.getItemCount() == 0) {
-                    removePast_result.setEnabled(false);
-                    editPast_result.setEnabled(false);
-                }
-            }
-        });
-        
-        past_unitsCB.setToolTipText("Select past results");
-        past_unitsCB.setFont(fontText);
-        past_unitsCB.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-        gbcPast.gridx = 1;
-        gbcPast.gridy = 2;
-        pastPanel.add(past_unitsCB,gbcPast);
-        
-        add_button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                if (!unit_name.getText().equals("Unit Name") && !credit_points.getText().equals("Credit Points")) {
-                    Unit u = new Unit(unit_name.getText(), Double.parseDouble(credit_points.getText()));
-                    u.setCoreUnit(core_unitCheck.isSelected());
-                    MyUniTracker.units.add(u);
-                    UnitsPanel up = new org.main.gui.UnitsPanel(u);
-                    up.setVisible(true);
-                    tab.insertTab(u.getUnitName(),null,up,null,tab.getTabCount()-1);
-                    updateCheckBoxes();
-                    updateGraph();
-                }
-            }
-        });
-        
-        addPastResult.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) { 
-                Dialog addPast = new Dialog(null);
-            }
-        });
-        
-        editPast_result.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) { 
-                Dialog editPast = new Dialog(MyUniTracker.findResult((String)past_unitsCB.getSelectedItem()));
-            }
-        });
-        
-        removePast_result.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                MyUniTracker.past_results.remove(MyUniTracker.findResult((String)past_unitsCB.getSelectedItem()));
-                past_unitsCB.removeAllItems();
-                for (Unit u : MyUniTracker.past_results) 
-                    past_unitsCB.addItem(u.getUnitName());
-            }
-        });
-        
-        iscurtin_student.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MyUniTracker.setIsCurtin(iscurtin_student.isSelected());
-                credit_points.setText(String.valueOf(MyUniTracker.DEFAULT_CREDIT));
-                refresh();
-            }
-        });
-        
-        /*
-         Check Box Panel Initialisation
-        */
-        init();
-        
-        this.add(combinedGraphPanel);
-        this.setVisible(true);
-        Platform.runLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run() {
-                initFX(fxPanel);
+        
+                
+
+                JPanel combinedGraphPanel = new JPanel();
+                combinedGraphPanel.setBackground(Color.decode("#eeeeee")); //Color.decode("#e0e0e0")
+                combinedGraphPanel.setLayout(new GridBagLayout());
+
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.insets = new Insets(5,5,0,0);
+
+                JPanel statsPanel = new JPanel(new GridBagLayout());
+                statsPanel.setBackground(java.awt.Color.WHITE);
+                statsPanel.setBorder(BorderFactory.createTitledBorder("Statistics"));
+                ((javax.swing.border.TitledBorder) statsPanel.getBorder()).setTitleFont(fontTitle);
+                gbc.fill = GridBagConstraints.HORIZONTAL;
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                combinedGraphPanel.add(statsPanel,gbc);
+
+                JPanel unitPanel = new JPanel(new GridBagLayout());
+                unitPanel.setBackground(java.awt.Color.WHITE);
+                unitPanel.setBorder(BorderFactory.createTitledBorder("Add Units"));
+                ((javax.swing.border.TitledBorder) unitPanel.getBorder()).setTitleFont(fontTitle);
+                gbc.fill = GridBagConstraints.HORIZONTAL;
+                gbc.gridx = 0;
+                gbc.gridy = 1;
+                combinedGraphPanel.add(unitPanel,gbc);
+
+                JPanel pastPanel = new JPanel(new GridBagLayout());
+                pastPanel.setBackground(java.awt.Color.WHITE);
+                pastPanel.setBorder(BorderFactory.createTitledBorder("Past Results"));
+                ((javax.swing.border.TitledBorder) pastPanel.getBorder()).setTitleFont(fontTitle);
+                gbc.fill = GridBagConstraints.HORIZONTAL;
+                gbc.anchor = GridBagConstraints.NORTH;
+                gbc.gridx = 0;
+                gbc.gridy = 2;
+                combinedGraphPanel.add(pastPanel,gbc);
+
+                checkBoxPanel = new JPanel(new GridBagLayout());
+                checkBoxPanel.setBackground(java.awt.Color.WHITE);
+                checkBoxPanel.setBorder(BorderFactory.createTitledBorder("Display Units"));
+                ((javax.swing.border.TitledBorder) checkBoxPanel.getBorder()).setTitleFont(fontTitle);
+                gbc.gridx = 0;
+                gbc.gridy = 3;
+                combinedGraphPanel.add(checkBoxPanel,gbc);
+
+                final JFXPanel fxPanel = new JFXPanel();
+                JPanel graphPanel = new JPanel(new GridBagLayout());
+                gbc.insets = new Insets(5,5,5,5);
+                gbc.gridheight = 4;
+                gbc.gridx = 1;
+                gbc.gridy = 0;
+                fxPanel.setBackground(Color.decode("#eeeeee"));
+                graphPanel.add(fxPanel);
+                combinedGraphPanel.add(graphPanel,gbc);
+                Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                        fxPanel.setScene(createScene());
+                        updateGraph();
+                    }
+                });
+
+                GridBagConstraints gbcStats = new GridBagConstraints();
+                gbcStats.fill = GridBagConstraints.HORIZONTAL;
+                gbcStats.insets = new Insets(3,0,0,3);
+
+                /*
+                 * Sub Panel of Stats For WAM
+                 */
+                JPanel wamPanel = new JPanel(new GridBagLayout());
+                wamPanel.setBackground(java.awt.Color.WHITE);
+                wamPanel.setBorder(BorderFactory.createTitledBorder("Weighted Average Mark"));
+                ((javax.swing.border.TitledBorder) wamPanel.getBorder()).setTitleFont(fontSubTitle);
+                gbcStats.fill = GridBagConstraints.HORIZONTAL;
+                gbcStats.anchor = GridBagConstraints.WEST;
+                gbcStats.gridx = 0;
+                gbcStats.gridy = 0;
+                statsPanel.add(wamPanel,gbcStats);
+
+                GridBagConstraints gbcWAM = new GridBagConstraints();
+                gbcWAM.insets = new Insets(3,3,3,3);
+
+                JLabel wamLabel = new JLabel("Current WAM:");
+                wamLabel.setFont(fontText);
+                gbcWAM.anchor = GridBagConstraints.EAST;
+                gbcWAM.gridx = 0;
+                gbcWAM.gridy = 0;
+                wamPanel.add(wamLabel,gbcWAM);
+                cur_wam = new JLabel(String.valueOf(MyUniTracker.calculateWAM(false)));
+                cur_wam.setFont(fontText);
+                gbcWAM.anchor = GridBagConstraints.WEST;
+                gbcWAM.gridx = 1;
+                gbcWAM.gridy = 0;
+                wamPanel.add(cur_wam,gbcWAM);
+                JLabel expect_wamLabel = new JLabel("Expected WAM (cur. units):");
+                expect_wamLabel.setFont(fontText);
+                gbcWAM.anchor = GridBagConstraints.EAST;
+                gbcWAM.gridx = 0;
+                gbcWAM.gridy = 1;
+                wamPanel.add(expect_wamLabel,gbcWAM);
+                expect_wam = new JLabel(String.valueOf(MyUniTracker.expectedWAM(false)));
+                expect_wam.setFont(fontText);
+                gbcWAM.anchor = GridBagConstraints.WEST;
+                gbcWAM.gridx = 1;
+                gbcWAM.gridy = 1;
+                wamPanel.add(expect_wam,gbcWAM);
+                JLabel core_wamLabel = new JLabel("Current WAM (Major/s):");
+                core_wamLabel.setFont(fontText);
+                gbcWAM.anchor = GridBagConstraints.EAST;
+                gbcWAM.gridx = 0;
+                gbcWAM.gridy = 2;
+                wamPanel.add(core_wamLabel,gbcWAM);
+                core_wam = new JLabel(String.valueOf(MyUniTracker.calculateWAM(true)));
+                core_wam.setFont(fontText);
+                gbcWAM.anchor = GridBagConstraints.WEST;
+                gbcWAM.gridx = 1;
+                gbcWAM.gridy = 2;
+                wamPanel.add(core_wam,gbcWAM);
+                JLabel core_expectwamLabel = new JLabel("Expected WAM (Major/s):");
+                core_expectwamLabel.setFont(fontText);
+                gbcWAM.anchor = GridBagConstraints.EAST;
+                gbcWAM.gridx = 0;
+                gbcWAM.gridy = 3;
+                wamPanel.add(core_expectwamLabel,gbcWAM);
+                core_expectwam = new JLabel(String.valueOf(MyUniTracker.expectedWAM(true)));
+                core_expectwam.setFont(fontText);
+                gbcWAM.anchor = GridBagConstraints.WEST;
+                gbcWAM.gridx = 1;
+                gbcWAM.gridy = 3;
+                wamPanel.add(core_expectwam,gbcWAM);
+
+                /*
+                 * Sub Panel of Stats For GPA
+                 */
+
+                JPanel gpaPanel = new JPanel(new GridBagLayout());
+                gpaPanel.setBackground(java.awt.Color.WHITE);
+                gpaPanel.setBorder(BorderFactory.createTitledBorder("Grade Point Average"));
+                ((javax.swing.border.TitledBorder) gpaPanel.getBorder()).setTitleFont(fontSubTitle);
+                gbcStats.fill = GridBagConstraints.HORIZONTAL;
+                gbcStats.gridx = 0;
+                gbcStats.gridy = 1;
+                statsPanel.add(gpaPanel,gbcStats);
+
+                GridBagConstraints gbcGPA = new GridBagConstraints();
+                gbcGPA.insets = new Insets(3,3,3,3);
+
+                JLabel gpaLabel = new JLabel("Current GPA:");
+                gpaLabel.setFont(fontText);
+                gbcGPA.anchor = GridBagConstraints.EAST;
+                gbcGPA.gridx = 0;
+                gbcGPA.gridy = 0;
+                gpaPanel.add(gpaLabel,gbcGPA);
+                cur_gpa = new JLabel(String.valueOf(MyUniTracker.calculateGPA()));
+                cur_gpa.setFont(fontText);
+                gbcGPA.anchor = GridBagConstraints.WEST;
+                gbcGPA.gridx = 1;
+                gbcGPA.gridy = 0;
+                gpaPanel.add(cur_gpa,gbcGPA);
+                JLabel expect_gpaLabel = new JLabel("Expected GPA (cur. units):");
+                expect_gpaLabel.setFont(fontText);
+                gbcGPA.anchor = GridBagConstraints.EAST;
+                gbcGPA.gridx = 0;
+                gbcGPA.gridy = 1;
+                gpaPanel.add(expect_gpaLabel,gbcGPA);
+                expect_gpa = new JLabel(String.valueOf(MyUniTracker.expectedGPA()));
+                expect_gpa.setFont(fontText);
+                gbcGPA.anchor = GridBagConstraints.WEST;
+                gbcGPA.gridx = 1;
+                gbcGPA.gridy = 1;
+                gpaPanel.add(expect_gpa,gbcGPA);
+
+                /*
+                 * Layout for unit panel
+                 */
+
+                GridBagConstraints gbcUnit = new GridBagConstraints();
+                gbcUnit.insets = new Insets(3,3,3,3);
+
+                JLabel name = new JLabel("Unit Name:");
+                name.setFont(fontText);
+                gbcUnit.gridx = 0;
+                gbcUnit.gridy = 0;
+                gbcUnit.anchor = GridBagConstraints.EAST;
+                unitPanel.add(name,gbcUnit);
+
+                final JTextField unit_name = new JTextField("Unit Name");
+                unit_name.setToolTipText("Enter the name of the unit wish to add");
+                unit_name.setFont(fontText);
+                unit_name.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+                gbcUnit.fill = GridBagConstraints.HORIZONTAL;
+                gbcUnit.gridx = 1;
+                gbcUnit.gridy = 0;
+                unitPanel.add(unit_name,gbcUnit);
+                gbcUnit.fill = GridBagConstraints.NONE;
+
+                JLabel credit_pts = new JLabel("No. Credit Points:");
+                credit_pts.setToolTipText("Enter the number of credit points for this unit");
+                credit_pts.setFont(fontText);
+                gbcUnit.gridx = 0;
+                gbcUnit.gridy = 1;
+                unitPanel.add(credit_pts,gbcUnit);
+
+                final JTextField credit_points = new JTextField(String.valueOf(MyUniTracker.DEFAULT_CREDIT));
+                credit_points.setFont(fontText);
+                credit_points.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+                gbcUnit.fill = GridBagConstraints.HORIZONTAL;
+                gbcUnit.gridx = 1;
+                gbcUnit.gridy = 1;
+                unitPanel.add(credit_points,gbcUnit);
+                gbcUnit.fill = GridBagConstraints.NONE;
+
+                JLabel core_unit = new JLabel("Is core unit:");
+                core_unit.setFont(fontText);
+                gbcUnit.gridx = 0;
+                gbcUnit.gridy = 2;
+                unitPanel.add(core_unit,gbcUnit);
+
+                final JCheckBox core_unitCheck = new JCheckBox();
+                core_unitCheck.setSelected(true);
+                core_unitCheck.setBackground(Color.WHITE);
+                gbcUnit.anchor = GridBagConstraints.WEST;
+                gbcUnit.gridx = 1;
+                unitPanel.add(core_unitCheck,gbcUnit);
+
+                JLabel curtin_student = new JLabel("Curtin Student:");
+                curtin_student.setFont(fontText);
+                gbcUnit.anchor = GridBagConstraints.EAST;
+                gbcUnit.gridx = 0;
+                gbcUnit.gridy = 4;
+                unitPanel.add(curtin_student,gbcUnit);
+
+                final JCheckBox iscurtin_student = new JCheckBox();
+                iscurtin_student.setSelected(MyUniTracker.isCurtin());
+                iscurtin_student.setBackground(Color.WHITE);
+                gbcUnit.anchor = GridBagConstraints.WEST;
+                gbcUnit.gridx = 1;
+                unitPanel.add(iscurtin_student,gbcUnit);
+
+                JButton add_button = new JButton("Add Unit");
+                add_button.setFont(fontText);
+                add_button.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+                add_button.setToolTipText("Add unit based on above information");
+                //gbcUnit.fill = GridBagConstraints.HORIZONTAL;
+                gbcUnit.anchor = GridBagConstraints.CENTER;
+                gbcUnit.gridwidth = 2;
+                gbcUnit.gridx = 0;
+                gbcUnit.gridy = 3;
+                unitPanel.add(add_button,gbcUnit);
+
+                gbcUnit.gridwidth = 1;
+
+                /*
+                 Layout for past results panel.
+                */
+
+                GridBagConstraints gbcPast = new GridBagConstraints();
+                gbcPast.insets = new Insets(3,3,3,3);
+
+                JLabel past_resultLabel = new JLabel("Add Past Results:");
+                past_resultLabel.setFont(fontText);
+                gbcPast.anchor = GridBagConstraints.EAST;
+                gbcPast.gridx = 0;
+                gbcPast.gridy = 1;
+                pastPanel.add(past_resultLabel,gbcPast);
+                gbcPast.anchor = GridBagConstraints.CENTER;
+
+                JButton addPastResult = new JButton("Add Results");
+                addPastResult.setFont(fontText);
+                addPastResult.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+                addPastResult.setToolTipText("Click to add previous results");
+                gbcPast.fill = GridBagConstraints.HORIZONTAL;
+                gbcPast.anchor = GridBagConstraints.WEST;
+                gbcPast.gridx = 1;
+                gbcPast.gridy = 1;
+                pastPanel.add(addPastResult,gbcPast);
+                gbcPast.fill = GridBagConstraints.NONE;
+
+                String[] past_unit_data = new String[MyUniTracker.past_results.size()];
+                for (int i = 0; i < past_unit_data.length; i++) {
+                    past_unit_data[i] = MyUniTracker.past_results.get(i).getUnitName();
+                }
+
+                JLabel past_unitLabel = new JLabel("Result:");
+                past_unitLabel.setFont(fontText);
+                gbcPast.anchor = GridBagConstraints.EAST;
+                gbcPast.gridx = 0;
+                gbcPast.gridy = 2;
+                pastPanel.add(past_unitLabel,gbcPast);
+
+                gbcPast.fill = GridBagConstraints.HORIZONTAL;
+
+                editPast_result = new JButton("Edit Result");
+                editPast_result.setFont(fontText);
+                editPast_result.setToolTipText("Click to edit the selected result");
+                gbcPast.gridx = 0;
+                gbcPast.gridy = 3;
+                pastPanel.add(editPast_result,gbcPast);
+
+                removePast_result = new JButton("Remove Result");
+                removePast_result.setFont(fontText);
+                removePast_result.setToolTipText("Click to remove the selected result");
+                gbcPast.gridx = 1;
+                pastPanel.add(removePast_result,gbcPast);
+
+                past_unitsCB = new JComboBox(past_unit_data);
+                past_unitsCB.addItemListener(new ItemListener() {
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        if (past_unitsCB.getItemCount() == 0) {
+                            removePast_result.setEnabled(false);
+                            editPast_result.setEnabled(false);
+                        }
+                    }
+                });
+
+                past_unitsCB.setToolTipText("Select past results");
+                past_unitsCB.setFont(fontText);
+                past_unitsCB.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+                gbcPast.gridx = 1;
+                gbcPast.gridy = 2;
+                pastPanel.add(past_unitsCB,gbcPast);
+
+                add_button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent event) {
+                        if (!unit_name.getText().equals("Unit Name") && !credit_points.getText().equals("Credit Points")) {
+                            Unit u = new Unit(unit_name.getText(), Double.parseDouble(credit_points.getText()));
+                            u.setCoreUnit(core_unitCheck.isSelected());
+                            MyUniTracker.units.add(u);
+                            UnitsPanel up = new org.main.gui.UnitsPanel(u);
+                            up.setVisible(true);
+                            tab.insertTab(u.getUnitName(),null,up,null,tab.getTabCount()-1);
+                            updateCheckBoxes();
+                            updateGraph();
+                        }
+                    }
+                });
+
+                addPastResult.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent event) { 
+                        Dialog addPast = new Dialog(null);
+                    }
+                });
+
+                editPast_result.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent event) { 
+                        Dialog editPast = new Dialog(MyUniTracker.findResult((String)past_unitsCB.getSelectedItem()));
+                    }
+                });
+
+                removePast_result.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent event) {
+                        MyUniTracker.past_results.remove(MyUniTracker.findResult((String)past_unitsCB.getSelectedItem()));
+                        past_unitsCB.removeAllItems();
+                        for (Unit u : MyUniTracker.past_results) 
+                            past_unitsCB.addItem(u.getUnitName());
+                    }
+                });
+
+                iscurtin_student.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        MyUniTracker.setIsCurtin(iscurtin_student.isSelected());
+                        credit_points.setText(String.valueOf(MyUniTracker.DEFAULT_CREDIT));
+                        refresh();
+                    }
+                });
+
+                /*
+                 Check Box Panel Initialisation
+                */
+                init();
+
+
+
+               add(combinedGraphPanel);
+
+                setVisible(true);
             }
         });
+        tab.setSelectedIndex(tab.getTabCount()-1);
     }
     
     private void refresh() { this.repaint();}
@@ -505,14 +517,7 @@ public class CombinedPanel extends JPanel {
     
     public void updateCheckBoxes() {
         init();
-        
     }
-    
-    private void initFX(JFXPanel fxPanel) {
-        // This method is invoked on the JavaFX thread
-        Scene scene = createScene();
-        fxPanel.setScene(scene);
-    } 
     
     private Scene createScene() {
         data = new ArrayList(1);
@@ -541,13 +546,7 @@ public class CombinedPanel extends JPanel {
         }
         Scene scene = new Scene(lineChart,832,600);
         Platform.setImplicitExit(false);
-       
         return scene;
-    }
-    
-    public void updateUnits() {
-        //Add all the checkboxes using MyUniTracker.units, then redraw the graph
-        // somehow store 
     }
     
     public void updateStats() {
@@ -561,7 +560,6 @@ public class CombinedPanel extends JPanel {
     } 
     
     public void updateGraph() {
-        this.repaint();
         final String[] colour = new String[] {"#f3622d","#fba71b","#57b757","#44aaca","#4258c9","#9a42c8","#c84164","#888888"};
         Platform.runLater(new Runnable() {
             @Override public void run() {

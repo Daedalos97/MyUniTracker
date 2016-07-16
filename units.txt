@@ -1,0 +1,54 @@
+[Curtin-Student] false
+
+[Unit] PHIL1002 6.0 CORE
+[Assessment] Quiz-1
+[Mark] 7.0/10.0
+[Weighting] 10.0
+[Assessment] Quiz-2
+[Mark] 6.0/10.0
+[Weighting] 10.0
+[Assessment] Essay
+[Mark] 7.0/10.0
+[Weighting] 60.0
+[Assessment] Tute
+[Mark] 8.0/10.0
+[Weighting] 20.0
+
+[Unit] ECON1101 6.0 CORE
+[Assessment] Speech
+[Mark] 8.0/10.0
+[Weighting] 10.0
+[Assessment] Tute
+[Mark] 10.0/10.0
+[Weighting] 10.0
+[Assessment] Quiz-1
+[Mark] 8.0/10.0
+[Weighting] 20.0
+[Assessment] Mid-Sem
+[Mark] 65.0/100.0
+[Weighting] 20.0
+[Assessment] Final
+[Mark] 70.0/100.0
+[Weighting] 40.0
+
+[Unit] EDUC1104 6.0 CORE
+[Assessment] Quiz-1
+[Mark] 36.0/40.0
+[Weighting] 40.0
+[Assessment] Guide
+[Mark] 7.3/10.0
+[Weighting] 60.0
+
+[Unit] ENSC1001 6.0 CORE
+[Assessment] Report
+[Mark] 7.5/10.0
+[Weighting] 60.0
+[Assessment] Quiz-1
+[Mark] 8.0/10.0
+[Weighting] 10.0
+[Assessment] Quiz-2
+[Mark] 7.0/10.0
+[Weighting] 10.0
+[Assessment] Speech
+[Mark] 8.0/10.0
+[Weighting] 20.0

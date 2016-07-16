@@ -301,7 +301,6 @@ public class FormPanel extends JPanel implements ActionListener {
             }
         });
         
-        
         /*
          * Unit Panel
          */

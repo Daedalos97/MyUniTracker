@@ -29,6 +29,10 @@ package org.main.myunitracker;
 import java.io.*;
 import org.main.gui.MyUniTrackerGUI;
 import java.util.ArrayList;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JWindow;
+import javax.swing.SwingConstants;
 
 /**
  * An Application designed to track university students units one semester at a
@@ -233,7 +237,21 @@ public class MyUniTracker {
         if (isCurtin()) {
             DEFAULT_CREDIT = 25.0;
         } else { DEFAULT_CREDIT = 6.0; }
+        JWindow window = new JWindow();
+            ImageIcon icon = new ImageIcon(MyUniTrackerGUI.class.getResource("images/splash.gif"));
+            window.getContentPane().add(
+                new JLabel("", icon, SwingConstants.CENTER));
+        window.setSize(640, 400);
+        window.setLocationRelativeTo(null);
+        window.setVisible(true);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        window.setVisible(false);
         MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",1118,688);
+        MUT.getTabbedPane().setSelectedIndex(MUT.getTabbedPane().getTabCount()-1);
         System.out.println(System.currentTimeMillis() - time);
     }
 }

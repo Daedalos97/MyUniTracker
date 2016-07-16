@@ -27,15 +27,14 @@
 package org.main.gui;
 
 import java.awt.Color;
-import java.io.File;
+import java.awt.Font;
 import javax.swing.ImageIcon;
+import java.awt.Image;
+import java.util.List;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
-import javax.swing.JWindow;
-import javax.swing.SwingConstants;
-import java.net.URLEncoder;
 import javax.swing.UIManager;
+import java.util.ArrayList;
 import java.awt.event.WindowAdapter;
 
 import org.main.myunitracker.MyUniTracker;
@@ -51,6 +50,7 @@ public class MyUniTrackerGUI extends JFrame {
     private static CombinedPanel CP;
     public static final Color BACKGROUND_COLOUR = Color.decode("#83C0E6");
     public static final Color BACKGROUND_COLOUR01 = Color.decode("#eeeeee");
+    public static final Font fontTitle = new Font("Arial", Font.PLAIN, 14), fontSubTitle = new Font("Arial", Font.PLAIN,13), fontText = new Font("Arial", Font.PLAIN,12);
     //D9B679, White, 83C0E6, E6A983
     
     /**
@@ -62,30 +62,25 @@ public class MyUniTrackerGUI extends JFrame {
         //Window Setup
         super(title);
         
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(width, height);
-        setLookFeel();
-        setLocationRelativeTo(null);
         WIDTH = width;
         HEIGHT = height;
         
-        //Data set up
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(WIDTH, HEIGHT);
+        this.setMinimumSize(new java.awt.Dimension(WIDTH,HEIGHT));
+        this.setLocationRelativeTo(null);
+        setLookFeel();
         
-        JWindow window = new JWindow();
-            ImageIcon icon = new ImageIcon(MyUniTrackerGUI.class.getResource("images/splash.gif"));
-            window.getContentPane().add(
-                new JLabel("", icon, SwingConstants.CENTER));
-        window.setSize(640, 400);
-        window.setLocationRelativeTo(null);
-        window.setVisible(true);
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        window.setVisible(false);
-        this.setIconImage(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker.png")).getImage());
-        System.out.println("Worked?");
+        //Data set up
+        List<Image> icons = new ArrayList();
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker512.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker256.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker128.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker64.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker32.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker16.png")).getImage());
+        this.setIconImages(icons);
+        
         tab = new JTabbedPane();
         
         this.addWindowListener(new WindowAdapter(){
@@ -97,9 +92,10 @@ public class MyUniTrackerGUI extends JFrame {
         );
         
         init();
+        
         this.add(tab);
         this.setResizable(true);
-        setVisible(true);
+        this.setVisible(true);
     }
     
     public static JTabbedPane getTabbedPane() {
@@ -113,15 +109,13 @@ public class MyUniTrackerGUI extends JFrame {
     private void init() {
         for (int i = 0; i < tab.getTabCount(); i++)
             tab.removeTabAt(i);
-        CP = new CombinedPanel();
         for (int i = 0; i < MyUniTracker.units.size(); i++) {
-            org.main.gui.UnitsPanel up = new org.main.gui.UnitsPanel(MyUniTracker.units.get(i));
-            up.setVisible(true);
+            UnitsPanel up = new UnitsPanel(MyUniTracker.units.get(i));
             tab.addTab(MyUniTracker.units.get(i).getUnitName(),up);
         }
+        CP = new CombinedPanel();
         tab.add("Overview",CP);
-        CP.updateGraph();
-        add(tab);
+        
     }
     
     /**
@@ -130,8 +124,8 @@ public class MyUniTrackerGUI extends JFrame {
     private void setLookFeel(){
         try {
             if (System.getProperty("os.name").startsWith("Windows")){
-            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            //UIManager.setLookAndFeel("javax.swing.plaf.metal");
             System.out.println(UIManager.getLookAndFeel().getName());
             //Mac com.sun.java.swing.plaf.mac.MacLookAndFeel
             //Nimbus com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel
@@ -139,7 +133,7 @@ public class MyUniTrackerGUI extends JFrame {
             } else if(System.getProperty("os.name").startsWith("Mac")) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 System.setProperty("com.apple.mrj.application.apple.menu.about.name", "MyUniTracker");
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                UIManager.setLookAndFeel("javax.swing.plaf.metal");
                 System.out.println(UIManager.getLookAndFeel().getName());
             } else {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
