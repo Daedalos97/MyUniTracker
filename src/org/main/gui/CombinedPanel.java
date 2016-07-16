@@ -723,7 +723,7 @@ public class CombinedPanel extends JPanel {
                         result.setUnitName(unit_name.getText());
                         result.setFinalGrade((String)gradeComboBox.getSelectedItem());
                         result.setFinalMark(Double.parseDouble(final_mark.getText()));
-                        result.setCreditPoints(Integer.parseInt(credit_points.getText()));
+                        result.setCreditPoints(Double.parseDouble(credit_points.getText()));
                         result.setCoreUnit(core_unitCheck.isSelected());
                         close();
                     }
@@ -766,7 +766,7 @@ public class CombinedPanel extends JPanel {
                 add_button.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Unit res = new Unit(unit_name.getText(),Integer.parseInt(credit_points.getText()));
+                        Unit res = new Unit(unit_name.getText(),Double.parseDouble(credit_points.getText()));
                         res.setFinalGrade((String)gradeComboBox.getSelectedItem());
                         res.setFinalMark(Double.parseDouble(final_mark.getText()));
                         res.setCoreUnit(core_unitCheck.isSelected());

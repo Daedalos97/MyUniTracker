@@ -133,7 +133,7 @@ public class MyUniTrackerGUI extends JFrame {
             } else if(System.getProperty("os.name").startsWith("Mac")) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 System.setProperty("com.apple.mrj.application.apple.menu.about.name", "MyUniTracker");
-                UIManager.setLookAndFeel("javax.swing.plaf.metal");
+                UIManager.setLookAndFeel(UIManager.getLookAndFeel().getName());
                 System.out.println(UIManager.getLookAndFeel().getName());
             } else {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

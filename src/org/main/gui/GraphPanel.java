@@ -36,6 +36,7 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 import javafx.application.Platform;
+import javax.swing.SwingUtilities;
 import org.main.myunitracker.Unit;
 
 
@@ -49,24 +50,22 @@ public class GraphPanel extends JPanel {
     private Unit unit;
     
     public GraphPanel(Unit u) {
-        this.setVisible(true);
+        setVisible(true);
         final JFXPanel fxPanel = new JFXPanel();
         this.unit = u;
-        
         add(fxPanel);
-        Platform.runLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run() {
-                initFX(fxPanel);
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        fxPanel.setScene(createScene());
+                    }
+                });
             }
         });
     }
-    
-    private void initFX(JFXPanel fxPanel) {
-        // This method is invoked on the JavaFX thread
-        Scene scene = createScene();
-        fxPanel.setScene(scene);
-    } 
     
     private Scene createScene() {
         Stage s = new Stage();

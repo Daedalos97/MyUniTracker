@@ -38,8 +38,6 @@ import org.main.myunitracker.Unit;
  */
 public class UnitsPanel extends JPanel {
     
-    private static GraphPanel gp;
-    
     public UnitsPanel(Unit unit) {
         this.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR);
         
@@ -47,14 +45,14 @@ public class UnitsPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         p.setBackground(Color.decode("#eeeeee"));
         
-        gp = new GraphPanel(unit);
+        GraphPanel gp = new GraphPanel(unit);
         gp.setBackground(Color.decode("#eeeeee"));
         gbc.gridheight = 2;
         gbc.gridx = 1;
         gbc.gridy = 0;
         p.add(gp,gbc);
         
-        FormPanel fp = new FormPanel(unit);
+        FormPanel fp = new FormPanel(unit,gp);
         fp.setBackground(Color.decode("#eeeeee"));
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.insets = new Insets(0,5,5,0);
@@ -65,6 +63,4 @@ public class UnitsPanel extends JPanel {
         add(p);
         this.setVisible(true);
     }
-    
-    public static GraphPanel getGraphPanel() { return gp; }
 }

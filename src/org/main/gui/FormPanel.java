@@ -60,7 +60,7 @@ public class FormPanel extends JPanel implements ActionListener {
     private GraphPanel gp;
     private Font fontTitle = new Font("Arial", Font.PLAIN, 14), fontSubTitle = new Font("Arial", Font.PLAIN,13), fontText = new Font("Arial", Font.PLAIN,12);
     
-    public FormPanel(Unit u) {
+    public FormPanel(Unit u, GraphPanel graphPane) {
         this.setLayout(new GridBagLayout());
         tab = MyUniTrackerGUI.getTabbedPane();
         
@@ -68,7 +68,7 @@ public class FormPanel extends JPanel implements ActionListener {
         Initialise variables
         */
         this.unit = u;
-        this.gp = UnitsPanel.getGraphPanel();
+        this.gp = graphPane;
         
         Assessment[] a = new Assessment[unit.getAssessments().size()];
         unit.getAssessments().toArray(a);
@@ -375,10 +375,9 @@ public class FormPanel extends JPanel implements ActionListener {
             public void actionPerformed(ActionEvent event) {
                 tab.setTitleAt(tab.getSelectedIndex(),unit_name.getText());
                 unit.setUnitName(unit_name.getText());
-                unit.setCreditPoints(Integer.parseInt(credit_points.getText()));
+                unit.setCreditPoints(Double.parseDouble(credit_points.getText()));
                 unit.setCoreUnit(core_unitCheck.isSelected());
-                MyUniTrackerGUI.getCombinedPanel().updateCheckBoxes();
-                MyUniTrackerGUI.getCombinedPanel().updateStats();
+                updatePanes();
             }
         });
         
@@ -387,8 +386,6 @@ public class FormPanel extends JPanel implements ActionListener {
             public void actionPerformed(ActionEvent event) {
                 tab.removeTabAt(tab.getSelectedIndex());
                 MyUniTracker.units.remove(tab.getSelectedIndex());
-                MyUniTrackerGUI.getCombinedPanel().updateCheckBoxes();
-                MyUniTrackerGUI.getCombinedPanel().updateStats();
                 updatePanes();
             }
         });
@@ -401,7 +398,7 @@ public class FormPanel extends JPanel implements ActionListener {
      * Updates other panels in the application
      */
     private void updatePanes() { MyUniTrackerGUI.getCombinedPanel().updateStats(); 
-    MyUniTrackerGUI.getCombinedPanel().updateGraph(); UnitsPanel.getGraphPanel().updateGraph(unit);}
+    MyUniTrackerGUI.getCombinedPanel().updateGraph(); MyUniTrackerGUI.getCombinedPanel().updateCheckBoxes(); gp.updateGraph(unit);}
     
     @Override
     public void actionPerformed(ActionEvent event) {}
@@ -493,12 +490,12 @@ public class FormPanel extends JPanel implements ActionListener {
                             assessmentsCB.removeAllItems();
                             for (Assessment a : unit.getAssessments())
                                 assessmentsCB.addItem(a.getAssessmentName());
+                            remove.setEnabled(true);
                             unit.update();
                             curGrade.setText(unit.getGrade());
                             curMark.setText(String.valueOf(unit.getWeightedMark()));
                             finalMarkNeeded.doClick();
-                            UnitsPanel.getGraphPanel().updateGraph(unit);
-                            MyUniTrackerGUI.getCombinedPanel().updateGraph();
+                            updatePanes();
                         } else {
                             edit_weight.setForeground(Color.red);
                             edit_weight.setText("Too high a weight");
@@ -538,8 +535,7 @@ public class FormPanel extends JPanel implements ActionListener {
                             curGrade.setText(unit.getGrade());
                             curMark.setText(String.valueOf(unit.getWeightedMark()));
                             finalMarkNeeded.doClick();
-                            gp.updateGraph(unit);
-                            MyUniTrackerGUI.getCombinedPanel().updateGraph();
+                            updatePanes();
                         } else {
                             edit_weight.setForeground(Color.red);
                             edit_weight.setText("Too high a weight");
