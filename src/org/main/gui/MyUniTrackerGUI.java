@@ -1,25 +1,27 @@
 /*
- * The MIT License
+ * Copyright (c) 2016, Samuel James Serwan Heath
+ * All rights reserved.
  *
- * Copyright 2016 Samuel James Serwan Heath.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * * Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
 package org.main.gui;
@@ -32,11 +34,9 @@ import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
+import java.net.URLEncoder;
 import javax.swing.UIManager;
 import java.awt.event.WindowAdapter;
-import java.net.URL;
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
 
 import org.main.myunitracker.MyUniTracker;
 
@@ -46,7 +46,7 @@ import org.main.myunitracker.MyUniTracker;
  */
 public class MyUniTrackerGUI extends JFrame {
     
-    final int width,height;
+    private static int WIDTH,HEIGHT;
     private static JTabbedPane tab;
     private static CombinedPanel CP;
     public static final Color BACKGROUND_COLOUR = Color.decode("#83C0E6");
@@ -66,14 +66,13 @@ public class MyUniTrackerGUI extends JFrame {
         setSize(width, height);
         setLookFeel();
         setLocationRelativeTo(null);
+        WIDTH = width;
+        HEIGHT = height;
         
         //Data set up
-        this.width = width;
-        this.height = height;
         
         JWindow window = new JWindow();
-            File f = new File("resources/splash.gif");
-            ImageIcon icon = new ImageIcon(f.getAbsolutePath());
+            ImageIcon icon = new ImageIcon(MyUniTrackerGUI.class.getResource("images/splash.gif"));
             window.getContentPane().add(
                 new JLabel("", icon, SwingConstants.CENTER));
         window.setSize(640, 400);
@@ -85,7 +84,8 @@ public class MyUniTrackerGUI extends JFrame {
             e.printStackTrace();
         }
         window.setVisible(false);
-        
+        this.setIconImage(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker.png")).getImage());
+        System.out.println("Worked?");
         tab = new JTabbedPane();
         
         this.addWindowListener(new WindowAdapter(){
@@ -115,7 +115,7 @@ public class MyUniTrackerGUI extends JFrame {
             tab.removeTabAt(i);
         CP = new CombinedPanel();
         for (int i = 0; i < MyUniTracker.units.size(); i++) {
-            org.main.gui.UnitsPanel up = new org.main.gui.UnitsPanel(MyUniTracker.units.get(i),width,height,CP);
+            org.main.gui.UnitsPanel up = new org.main.gui.UnitsPanel(MyUniTracker.units.get(i));
             up.setVisible(true);
             tab.addTab(MyUniTracker.units.get(i).getUnitName(),up);
         }
@@ -130,25 +130,22 @@ public class MyUniTrackerGUI extends JFrame {
     private void setLookFeel(){
         try {
             if (System.getProperty("os.name").startsWith("Windows")){
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            String LF = UIManager.getLookAndFeel().getName();
-            System.out.println(LF);
-            if (LF.matches("Nimbus")){
-                
-            }
+            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            System.out.println(UIManager.getLookAndFeel().getName());
             //Mac com.sun.java.swing.plaf.mac.MacLookAndFeel
             //Nimbus com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel
             //Windows com.sun.java.swing.plaf.windows.WindowsLookAndFeel
             } else if(System.getProperty("os.name").startsWith("Mac")) {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-            String LF = UIManager.getLookAndFeel().getName();
-            System.out.println(LF);
+                System.setProperty("apple.laf.useScreenMenuBar", "true");
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "MyUniTracker");
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                System.out.println(UIManager.getLookAndFeel().getName());
             } else {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
         } catch (Exception exc){
             System.out.println(exc.getMessage());
-        
         }
     }
 }

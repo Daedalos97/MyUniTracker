@@ -1,25 +1,27 @@
 /*
- * The MIT License
+ * Copyright (c) 2016, Samuel James Serwan Heath
+ * All rights reserved.
  *
- * Copyright 2016 Samuel James Serwan Heath.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * * Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
 package org.main.gui;
@@ -56,10 +58,9 @@ public class FormPanel extends JPanel implements ActionListener {
     private JComboBox<String> assessmentsCB;
     private JTabbedPane tab;
     private GraphPanel gp;
-    private CombinedPanel cp;
     private Font fontTitle = new Font("Arial", Font.PLAIN, 14), fontSubTitle = new Font("Arial", Font.PLAIN,13), fontText = new Font("Arial", Font.PLAIN,12);
     
-    public FormPanel(Unit u, GraphPanel graphPanel, CombinedPanel combinedPanel) {
+    public FormPanel(Unit u) {
         this.setLayout(new GridBagLayout());
         tab = MyUniTrackerGUI.getTabbedPane();
         
@@ -67,8 +68,7 @@ public class FormPanel extends JPanel implements ActionListener {
         Initialise variables
         */
         this.unit = u;
-        this.gp = graphPanel;
-        this.cp = combinedPanel;
+        this.gp = UnitsPanel.getGraphPanel();
         
         Assessment[] a = new Assessment[unit.getAssessments().size()];
         unit.getAssessments().toArray(a);
@@ -86,7 +86,7 @@ public class FormPanel extends JPanel implements ActionListener {
          */
         
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5,0,5,0);
+        gbc.insets = new Insets(5,0,0,0);
         gbc.fill = GridBagConstraints.BOTH;
         
         JPanel assessPanel = new JPanel();
@@ -184,7 +184,12 @@ public class FormPanel extends JPanel implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (unit.getAssessments().size() > 1) {
-                    unit.removeAssessment((String)assessmentsCB.getSelectedItem());
+                    String s = (String)assessmentsCB.getSelectedItem();
+                    if (s.equals("Final Exam")) {
+                        unit.setHasFinal(false);
+                        finalMarkNeeded.doClick();
+                    }
+                    unit.removeAssessment(s);
                     gp.updateGraph(unit);
                 }
                 else remove.setEnabled(false);
@@ -306,7 +311,7 @@ public class FormPanel extends JPanel implements ActionListener {
         gbcUnit.insets = new Insets(3,3,3,3);
         final int unitColNum = 8;
 
-        JLabel name = new JLabel("Unit Name: ");
+        JLabel name = new JLabel("Unit Name:");
         name.setFont(fontText);
         gbcUnit.gridx = 0;
         gbcUnit.gridy = 0;
@@ -323,7 +328,7 @@ public class FormPanel extends JPanel implements ActionListener {
         unitPanel.add(unit_name,gbcUnit);
         gbcUnit.fill = GridBagConstraints.NONE;
 
-        JLabel credit_pts = new JLabel("No. Credit Points: ");
+        JLabel credit_pts = new JLabel("No. Credit Points:");
         credit_pts.setFont(fontText);
         gbcUnit.gridx = 0;
         gbcUnit.gridy = 1;
@@ -373,6 +378,8 @@ public class FormPanel extends JPanel implements ActionListener {
                 unit.setUnitName(unit_name.getText());
                 unit.setCreditPoints(Integer.parseInt(credit_points.getText()));
                 unit.setCoreUnit(core_unitCheck.isSelected());
+                MyUniTrackerGUI.getCombinedPanel().updateCheckBoxes();
+                MyUniTrackerGUI.getCombinedPanel().updateStats();
             }
         });
         
@@ -381,6 +388,8 @@ public class FormPanel extends JPanel implements ActionListener {
             public void actionPerformed(ActionEvent event) {
                 tab.removeTabAt(tab.getSelectedIndex());
                 MyUniTracker.units.remove(tab.getSelectedIndex());
+                MyUniTrackerGUI.getCombinedPanel().updateCheckBoxes();
+                MyUniTrackerGUI.getCombinedPanel().updateStats();
                 updatePanes();
             }
         });
@@ -390,9 +399,10 @@ public class FormPanel extends JPanel implements ActionListener {
     }
     
     /**
-     * Updates the
+     * Updates other panels in the application
      */
-    private void updatePanes() { cp.updateStats(); cp.updateGraph(); gp.updateGraph(unit);}
+    private void updatePanes() { MyUniTrackerGUI.getCombinedPanel().updateStats(); 
+    MyUniTrackerGUI.getCombinedPanel().updateGraph(); UnitsPanel.getGraphPanel().updateGraph(unit);}
     
     @Override
     public void actionPerformed(ActionEvent event) {}
@@ -478,17 +488,22 @@ public class FormPanel extends JPanel implements ActionListener {
                 submit.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
-                        unit.addAssessment(new Assessment(edit_assessname.getText(), Double.parseDouble(edit_mark.getText()), Double.parseDouble(edit_outOf.getText()), Double.parseDouble(edit_weight.getText())));
-                        close();
-                        assessmentsCB.removeAllItems();
-                        for (Assessment a : unit.getAssessments())
-                            assessmentsCB.addItem(a.getAssessmentName());
-                        unit.update();
-                        curGrade.setText(unit.getGrade());
-                        curMark.setText(String.valueOf(unit.getWeightedMark()));
-                        finalMarkNeeded.doClick();
-                        gp.updateGraph(unit);
-                        cp.updateGraph();
+                        if (unit.hasMaxWeighting(Double.parseDouble(edit_weight.getText())) && !edit_weight.getText().equals("Too high a weight")) {
+                            unit.addAssessment(new Assessment(edit_assessname.getText(), Double.parseDouble(edit_mark.getText()), Double.parseDouble(edit_outOf.getText()), Double.parseDouble(edit_weight.getText())));
+                            close();
+                            assessmentsCB.removeAllItems();
+                            for (Assessment a : unit.getAssessments())
+                                assessmentsCB.addItem(a.getAssessmentName());
+                            unit.update();
+                            curGrade.setText(unit.getGrade());
+                            curMark.setText(String.valueOf(unit.getWeightedMark()));
+                            finalMarkNeeded.doClick();
+                            UnitsPanel.getGraphPanel().updateGraph(unit);
+                            MyUniTrackerGUI.getCombinedPanel().updateGraph();
+                        } else {
+                            edit_weight.setForeground(Color.red);
+                            edit_weight.setText("Too high a weight");
+                        }
                     }
                 });
             } else {
@@ -511,20 +526,25 @@ public class FormPanel extends JPanel implements ActionListener {
                 submit.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
-                        ass.setName(edit_assessname.getText());
-                        ass.setMark(Double.parseDouble(edit_mark.getText()));
-                        ass.setOutOf(Double.parseDouble(edit_outOf.getText()));
-                        ass.setWeight(Double.parseDouble(edit_weight.getText()));
-                        close();
-                        assessmentsCB.removeAllItems();
-                        for (Assessment a : unit.getAssessments())
-                            assessmentsCB.addItem(a.getAssessmentName());
-                        unit.update();
-                        curGrade.setText(unit.getGrade());
-                        curMark.setText(String.valueOf(unit.getWeightedMark()));
-                        finalMarkNeeded.doClick();
-                        gp.updateGraph(unit);
-                        cp.updateGraph();
+                        if (unit.editHasMaxWeighting(ass,Double.parseDouble(edit_weight.getText())) && !edit_weight.getText().equals("Too high a weight")) {
+                            ass.setName(edit_assessname.getText());
+                            ass.setMark(Double.parseDouble(edit_mark.getText()));
+                            ass.setOutOf(Double.parseDouble(edit_outOf.getText()));
+                            ass.setWeight(Double.parseDouble(edit_weight.getText()));
+                            close();
+                            assessmentsCB.removeAllItems();
+                            for (Assessment a : unit.getAssessments())
+                                assessmentsCB.addItem(a.getAssessmentName());
+                            unit.update();
+                            curGrade.setText(unit.getGrade());
+                            curMark.setText(String.valueOf(unit.getWeightedMark()));
+                            finalMarkNeeded.doClick();
+                            gp.updateGraph(unit);
+                            MyUniTrackerGUI.getCombinedPanel().updateGraph();
+                        } else {
+                            edit_weight.setForeground(Color.red);
+                            edit_weight.setText("Too high a weight");
+                        }
                     }
                 });
             }

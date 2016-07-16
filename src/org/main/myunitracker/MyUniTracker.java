@@ -1,25 +1,27 @@
 /*
- * The MIT License
+ * Copyright (c) 2016, Samuel James Serwan Heath
+ * All rights reserved.
  *
- * Copyright 2016 Samuel James Serwan Heath.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * * Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
 package org.main.myunitracker;
@@ -29,22 +31,55 @@ import org.main.gui.MyUniTrackerGUI;
 import java.util.ArrayList;
 
 /**
- * 
+ * An Application designed to track university students units one semester at a
+ * time, as well as an overview of their past results.
  * @author Samuel Heath
  */
 public class MyUniTracker {
     
     public static ArrayList<Unit> units;
-    public static ArrayList<Unit> past_units;
+    public static ArrayList<Unit> past_results;
     public static double GPA;
     public static double WAM;
+    public static boolean isCurtin = false;
+    public static double DEFAULT_CREDIT = 6.0;
     
+    /*
+     * @return Whether user is a curtin student or not.
+     */
+    public static boolean isCurtin() { return isCurtin; }
+    
+    /**
+     * Sets the boolean    isCurtin to be equal to some boolean param.
+     * @param curtin       The value we want isCurtin to be.
+     */
+    public static void setIsCurtin(boolean curtin) { 
+        isCurtin = curtin;
+        if (isCurtin()) {
+            DEFAULT_CREDIT = 25.0;
+        } else { DEFAULT_CREDIT = 6.0; }
+    }
+    
+    /**
+     * @param past_result  The name of the unit in the past result.
+     * @return             The stored result if it exists.
+     */
+    public static Unit findResult(String past_result) {
+        for (Unit u : past_results) {
+            if (u.getUnitName().equals(past_result)) return u;
+        }
+        return null;
+    }
+    
+    /**
+     * @return    The user's current GPA based on past results they have entered.
+     */
     public static double calculateGPA() {
         double credit = 0.0;
         double sum = 0.0;
-        for (int i = 0; i < past_units.size(); i++) {
-            int cred = past_units.get(i).getCreditPoints();
-            switch (past_units.get(i).getFinalGrade()) {
+        for (int i = 0; i < past_results.size(); i++) {
+            double cred = past_results.get(i).getCreditPoints();
+            switch (past_results.get(i).getFinalGrade()) {
                 case "HD": sum += cred*7.0; credit += cred; break;
                 case "D": sum += cred*6.0; credit += cred; break;
                 case "CR": sum += cred*5.0; credit += cred; break;
@@ -55,12 +90,15 @@ public class MyUniTracker {
         return (double)Math.round(sum/credit*1000d)/1000d;
     }
     
+    /**
+     * @return    The expected GPA based on the current units being tracked
+     */
     public static double expectedGPA() {
         int total_credit = 0;
         double total_sum = 0.0;
-        for (int i = 0; i < past_units.size(); i++) {
-            int cred = past_units.get(i).getCreditPoints();
-            String results = past_units.get(i).getFinalGrade();
+        for (int i = 0; i < past_results.size(); i++) {
+            double cred = past_results.get(i).getCreditPoints();
+            String results = past_results.get(i).getFinalGrade();
             switch (results) {
                 case "HD": total_sum += cred*7.0; total_credit += cred; break;
                 case "D": total_sum += cred*6.0; total_credit += cred; break;
@@ -70,7 +108,7 @@ public class MyUniTracker {
             }
         }
         for (int i = 0; i < units.size(); i++) {
-            int cred = units.get(i).getCreditPoints();
+            double cred = units.get(i).getCreditPoints();
             String results = units.get(i).getGrade();
             switch (results) {
                 case "HD": total_sum += cred*7.0; total_credit += cred; break;
@@ -84,36 +122,50 @@ public class MyUniTracker {
     }
     
     /**
-     * @param majorWAM says whether or not we are looking at only core units
-     * @return The WAM current WAM for the major.
+     * @param majorWAM    says whether or not we are looking at only core units.
+     * @return            The WAM current WAM for the major.
      */
     public static double calculateWAM(boolean majorWAM) {
         double credit = 0.0;
         double sum = 0.0;
-        for (int i = 0; i < past_units.size(); i++) {
+        for (int i = 0; i < past_results.size(); i++) {
             if (majorWAM) {
-                if (past_units.get(i).isCoreUnit()) {
-                    sum += past_units.get(i).getFinalMark()*past_units.get(i).getCreditPoints();
-                    credit += past_units.get(i).getCreditPoints();
+                if (past_results.get(i).isCoreUnit()) {
+                    sum += past_results.get(i).getFinalMark()*past_results.get(i).getCreditPoints();
+                    credit += past_results.get(i).getCreditPoints();
                 }
             } else {
-                sum += past_units.get(i).getFinalMark()*past_units.get(i).getCreditPoints();
-                credit += past_units.get(i).getCreditPoints();
+                sum += past_results.get(i).getFinalMark()*past_results.get(i).getCreditPoints();
+                credit += past_results.get(i).getCreditPoints();
             }
         }
         return (double)Math.round(sum/credit*1000d)/1000d;
     }
     
-    public static double expectedWAM() {
+    public static double expectedWAM(boolean majorWAM) {
         double credit = 0.0;
         double sum = 0.0;
-        for (int i = 0; i < past_units.size(); i++) {
-            sum += past_units.get(i).getFinalMark()*past_units.get(i).getCreditPoints();
-            credit += past_units.get(i).getCreditPoints();
+        for (int i = 0; i < past_results.size(); i++) {
+            if (majorWAM) {
+                if (past_results.get(i).isCoreUnit()) {
+                    sum += past_results.get(i).getFinalMark()*past_results.get(i).getCreditPoints();
+                    credit += past_results.get(i).getCreditPoints();
+                }
+            } else {
+                sum += past_results.get(i).getFinalMark()*past_results.get(i).getCreditPoints();
+                credit += past_results.get(i).getCreditPoints();
+            }
         }
         for (int i = 0; i < units.size(); i++) {
-            sum += units.get(i).getWeightedMark()*units.get(i).getCreditPoints();
-            credit += units.get(i).getCreditPoints();
+            if (majorWAM) {
+                if (units.get(i).isCoreUnit()) {
+                    sum += units.get(i).getWeightedMark()*units.get(i).getCreditPoints();
+                    credit += units.get(i).getCreditPoints();
+                }
+            } else {
+                sum += units.get(i).getWeightedMark()*units.get(i).getCreditPoints();
+                credit += units.get(i).getCreditPoints();
+            }
         }
         return (double)Math.round(sum/credit*1000d)/1000d;
     }
@@ -124,12 +176,11 @@ public class MyUniTracker {
     public ArrayList<Unit> getUnits() { return this.units; }
     
     /**
-     * @return The past past_units of this student.
+     * @return The past past_results of this student.
      */
-    public ArrayList<Unit> getGrades() { return this.past_units; }
+    public ArrayList<Unit> getGrades() { return this.past_results; }
     
     public static void writeToFile() {
-        System.out.println();
         try {
             File f = new File("units.txt");
             if (!f.exists()) {
@@ -137,6 +188,8 @@ public class MyUniTracker {
             }
             FileWriter fw = new FileWriter(f.getAbsoluteFile());
             BufferedWriter b = new BufferedWriter(fw);
+            b.write("[Curtin-Student] " + isCurtin());
+            b.newLine();
             for (Unit u : units) {
                 b.newLine();
                 String s = "";
@@ -156,7 +209,7 @@ public class MyUniTracker {
                 }
             }
             
-            for (Unit u: past_units) {
+            for (Unit u: past_results) {
                 String s = "";
                 if (u.isCoreUnit())
                     s = " CORE";
@@ -165,13 +218,6 @@ public class MyUniTracker {
             }
             b.close();
         } catch (IOException IOE) { IOE.printStackTrace(); }
-    }
-    
-    public static Unit findResult(String past_result) {
-        for (Unit u : past_units) {
-            if (u.getUnitName().equals(past_result)) return u;
-        }
-        return null;
     }
     
     /**
@@ -183,10 +229,11 @@ public class MyUniTracker {
         UnitReader UR = new UnitReader();
         UR.readUnits();
         units = UR.getUnits();
-        past_units = UR.getGrades();
+        past_results = UR.getGrades();
+        if (isCurtin()) {
+            DEFAULT_CREDIT = 25.0;
+        } else { DEFAULT_CREDIT = 6.0; }
         MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",1118,688);
         System.out.println(System.currentTimeMillis() - time);
-        System.out.println(calculateWAM(true));
-        //System.exit(-1);
     }
 }

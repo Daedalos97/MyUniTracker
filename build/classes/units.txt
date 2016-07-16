@@ -108,11 +108,12 @@
 [Mark] 0.1/10.0
 [Weighting] 5.0
 
-[Past-Grade] CITS1001 HD 86.0 6
+[Past-Grade] CITS1001 HD 86.0 6 CORE
 [Past-Grade] PHIL1001 D 79.0 6
 [Past-Grade] CITS1401 CR 66.0 6
-[Past-Grade] MATH1721 HD 80.0 6
-[Past-Grade] CITS1402 HD 86.0 6
-[Past-Grade] ENSC1001 D 72.0 6
+[Past-Grade] MATH1721 HD 80.0 6 CORE
+[Past-Grade] CITS1402 HD 86.0 6 CORE
+[Past-Grade] ENSC1001 D 72.0 6 CORE
 [Past-Grade] ECON1001 HD 80.0 6
-[Past-Grade] MATH1722 D 75.0 6
+[Past-Grade] MATH1722 D 75.0 6 CORE
+[Past-Grade] PHYS1030 HD 89.6 6 CORE
