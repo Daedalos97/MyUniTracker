@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.main.gui;
+package org.myunitracker.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,15 +50,16 @@ import javafx.scene.chart.NumberAxis;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.main.myunitracker.Unit;
+import org.myunitracker.main.Unit;
 import javafx.scene.chart.XYChart;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-import org.main.myunitracker.MyUniTracker;
+import org.myunitracker.main.MyUniTracker;
 import java.awt.event.WindowAdapter;
 import javax.swing.SwingUtilities;
+import org.myunitracker.main.UnitReader;
 
 /*
 int gridx,int gridy,int gridwidth,int gridheight,double weightx, double weighty,
@@ -70,7 +71,7 @@ int anchor,int fill,Insets insets,int ipadx,int ipady
  */
 public class CombinedPanel extends JPanel {
     
-    private ArrayList<Unit> checkUnits;
+    private final String[] colour = new String[] {"#f3622d","#fba71b","#57b757","#44aaca","#4258c9","#9a42c8","#c84164","#888888"};
     private ArrayList<XYChart.Series> data;
     private JButton removePast_result, editPast_result;
     private JComboBox past_unitsCB;
@@ -88,15 +89,12 @@ public class CombinedPanel extends JPanel {
         SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run() {
-        
-                
-
                 JPanel combinedGraphPanel = new JPanel();
                 combinedGraphPanel.setBackground(Color.decode("#eeeeee")); //Color.decode("#e0e0e0")
                 combinedGraphPanel.setLayout(new GridBagLayout());
 
                 GridBagConstraints gbc = new GridBagConstraints();
-                gbc.insets = new Insets(5,5,0,0);
+                gbc.insets = new Insets(10,10,5,5);
 
                 JPanel statsPanel = new JPanel(new GridBagLayout());
                 statsPanel.setBackground(java.awt.Color.WHITE);
@@ -136,7 +134,7 @@ public class CombinedPanel extends JPanel {
 
                 final JFXPanel fxPanel = new JFXPanel();
                 JPanel graphPanel = new JPanel(new GridBagLayout());
-                gbc.insets = new Insets(5,5,5,5);
+                gbc.insets = new Insets(10,5,10,10);
                 gbc.gridheight = 4;
                 gbc.gridx = 1;
                 gbc.gridy = 0;
@@ -267,14 +265,14 @@ public class CombinedPanel extends JPanel {
                 GridBagConstraints gbcUnit = new GridBagConstraints();
                 gbcUnit.insets = new Insets(3,3,3,3);
 
-                JLabel name = new JLabel("Unit Name:");
+                JLabel name = new JLabel("Unit Code:");
                 name.setFont(fontText);
                 gbcUnit.gridx = 0;
                 gbcUnit.gridy = 0;
                 gbcUnit.anchor = GridBagConstraints.EAST;
                 unitPanel.add(name,gbcUnit);
 
-                final JTextField unit_name = new JTextField("Unit Name");
+                final JTextField unit_name = new JTextField("Unit Code");
                 unit_name.setToolTipText("Enter the name of the unit wish to add");
                 unit_name.setFont(fontText);
                 unit_name.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
@@ -291,7 +289,7 @@ public class CombinedPanel extends JPanel {
                 gbcUnit.gridy = 1;
                 unitPanel.add(credit_pts,gbcUnit);
 
-                final JTextField credit_points = new JTextField(String.valueOf(MyUniTracker.DEFAULT_CREDIT));
+                final JTextField credit_points = new JTextField(String.valueOf(MyUniTracker.getDefaultCredit()));
                 credit_points.setFont(fontText);
                 credit_points.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 gbcUnit.fill = GridBagConstraints.HORIZONTAL;
@@ -300,7 +298,7 @@ public class CombinedPanel extends JPanel {
                 unitPanel.add(credit_points,gbcUnit);
                 gbcUnit.fill = GridBagConstraints.NONE;
 
-                JLabel core_unit = new JLabel("Is core unit:");
+                JLabel core_unit = new JLabel("Core Unit:");
                 core_unit.setFont(fontText);
                 gbcUnit.gridx = 0;
                 gbcUnit.gridy = 2;
@@ -392,7 +390,7 @@ public class CombinedPanel extends JPanel {
                 removePast_result.setToolTipText("Click to remove the selected result");
                 gbcPast.gridx = 1;
                 pastPanel.add(removePast_result,gbcPast);
-
+                
                 past_unitsCB = new JComboBox(past_unit_data);
                 past_unitsCB.addItemListener(new ItemListener() {
                     @Override
@@ -400,10 +398,23 @@ public class CombinedPanel extends JPanel {
                         if (past_unitsCB.getItemCount() == 0) {
                             removePast_result.setEnabled(false);
                             editPast_result.setEnabled(false);
+                        } else {
                         }
                     }
                 });
-
+                
+                /*
+                    Simply check to see if there are any past results and if 
+                there is then allow users to use the edit and remove button,
+                if not then make sure that they cant because they makes no sense
+                and results in an error.
+                */
+                if (MyUniTracker.past_results.isEmpty()) { removePast_result.setEnabled(false);
+                    editPast_result.setEnabled(false);  past_unitsCB.setEnabled(false);
+                } else { removePast_result.setEnabled(true); editPast_result.setEnabled(true);
+                    past_unitsCB.setEnabled(true);
+                }
+                
                 past_unitsCB.setToolTipText("Select past results");
                 past_unitsCB.setFont(fontText);
                 past_unitsCB.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
@@ -414,15 +425,15 @@ public class CombinedPanel extends JPanel {
                 add_button.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
-                        if (!unit_name.getText().equals("Unit Name") && !credit_points.getText().equals("Credit Points")) {
+                        if (!unit_name.getText().equals("Unit Code") && !credit_points.getText().equals("Credit Points")) {
                             Unit u = new Unit(unit_name.getText(), Double.parseDouble(credit_points.getText()));
                             u.setCoreUnit(core_unitCheck.isSelected());
                             MyUniTracker.units.add(u);
-                            UnitsPanel up = new org.main.gui.UnitsPanel(u);
+                            UnitsPanel up = new org.myunitracker.gui.UnitsPanel(u);
                             up.setVisible(true);
                             tab.insertTab(u.getUnitName(),null,up,null,tab.getTabCount()-1);
-                            updateCheckBoxes();
-                            updateGraph();
+                            updateAll();
+                            unit_name.setText("Unit Code");
                         }
                     }
                 });
@@ -448,6 +459,16 @@ public class CombinedPanel extends JPanel {
                         past_unitsCB.removeAllItems();
                         for (Unit u : MyUniTracker.past_results) 
                             past_unitsCB.addItem(u.getUnitName());
+                        if (past_unitsCB.getItemCount() == 0) {
+                            removePast_result.setEnabled(false);
+                            editPast_result.setEnabled(false);
+                            past_unitsCB.setEnabled(false);
+                        } else {
+                            editPast_result.setEnabled(true);
+                            editPast_result.setEnabled(true);
+                            past_unitsCB.setEnabled(true);
+                        }
+                        updateAll();
                     }
                 });
 
@@ -455,15 +476,15 @@ public class CombinedPanel extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         MyUniTracker.setIsCurtin(iscurtin_student.isSelected());
-                        credit_points.setText(String.valueOf(MyUniTracker.DEFAULT_CREDIT));
-                        refresh();
+                        credit_points.setText(String.valueOf(MyUniTracker.getDefaultCredit()));
+                        updateStats();
                     }
                 });
 
                 /*
                  Check Box Panel Initialisation
                 */
-                init();
+                updateAll();
 
 
 
@@ -475,11 +496,74 @@ public class CombinedPanel extends JPanel {
         tab.setSelectedIndex(tab.getTabCount()-1);
     }
     
-    private void refresh() { this.repaint();}
+    private Scene createScene() {
+        data = new ArrayList(1);
+        Stage s = new Stage();
+        s.setTitle("Unit Progress");
+        //defining the axes
+        final CategoryAxis xAxis = new CategoryAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Assessments");
+        yAxis.setLabel("Marks (%)");
+        yAxis.setUpperBound(100.0);
+        //creating the chart
+        lineChart = new LineChart(xAxis,yAxis);
+        lineChart.setTitle("All Units");
+       
+        //Defining a series
+        for (Unit m : MyUniTracker.units) {
+            XYChart.Series series = new XYChart.Series();
+            series.setName(m.getUnitName());
+            for (int i = 0; i < m.getAssessments().size(); i++) {
+                if (!m.getAssessments().get(i).getAssessmentName().equals("Final Exam")) 
+                series.getData().add(new XYChart.Data(m.getAssessments().get(i).getAssessmentName(),(m.getAssessments().get(i).getPercentage())));  
+            }
+            data.add(series);
+            lineChart.getData().add(series);
+        }
+        Scene scene = new Scene(lineChart,889,702);
+        Platform.setImplicitExit(false);
+        return scene;
+    }
     
-    private void init() {
+    public void updateStats() {
+        cur_wam.setText(String.valueOf(MyUniTracker.calculateWAM(false)));
+        expect_wam.setText(String.valueOf(MyUniTracker.expectedWAM(false)));
+        core_wam.setText(String.valueOf(MyUniTracker.calculateWAM(true)));
+        core_expectwam.setText(String.valueOf(MyUniTracker.expectedWAM(true)));
+        cur_gpa.setText(String.valueOf(MyUniTracker.calculateGPA()));
+        expect_gpa.setText(String.valueOf(MyUniTracker.expectedGPA()));
+        this.repaint();
+    } 
+    
+    public void updateGraph() {
+        Platform.runLater(new Runnable() {
+            @Override public void run() {
+                for (XYChart.Series s: data) {
+                    s.getData().clear();
+                }
+                lineChart.getData().clear();
+                int i = 0;
+                for (Unit unit : MyUniTracker.units) {
+                    if (unit.isDisplayed()) {
+                        XYChart.Series series = new XYChart.Series();
+                        tab.setForegroundAt(i, Color.decode(colour[i%colour.length]));
+                        i++;
+                        series.setName(unit.getUnitName());
+                        for (int j = 0; j < unit.getAssessments().size(); j++) {
+                            if (!unit.getAssessments().get(j).getAssessmentName().equals("Final Exam")) 
+                                series.getData().add(new XYChart.Data(unit.getAssessments().get(j).getAssessmentName(),(unit.getAssessments().get(j).getPercentage())));  
+                        }
+                        data.add(series);
+                        lineChart.getData().add(series);
+                    }
+                }
+            }
+        });
+    }
+    
+    protected void updateAll() {
         checkBoxPanel.removeAll();
-        checkUnits = MyUniTracker.units;
         checkMap = new HashMap();
         
         for (int i = 0; i < MyUniTracker.units.size(); i++) {
@@ -512,78 +596,8 @@ public class CombinedPanel extends JPanel {
                     updateGraph();
                 }
             });
+            unit.setForeground(Color.decode(colour[i%colour.length]));
         }
-    }
-    
-    public void updateCheckBoxes() {
-        init();
-    }
-    
-    private Scene createScene() {
-        data = new ArrayList(1);
-        Stage s = new Stage();
-        s.setTitle("Unit Progress");
-        //defining the axes
-        final CategoryAxis xAxis = new CategoryAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Assessments");
-        yAxis.setLabel("Marks (%)");
-        yAxis.setUpperBound(100.0);
-        //creating the chart
-        lineChart = new LineChart(xAxis,yAxis);
-        lineChart.setTitle("All Units");
-       
-        //Defining a series
-        for (Unit m : MyUniTracker.units) {
-            XYChart.Series series = new XYChart.Series();
-            series.setName(m.getUnitName());
-            for (int i = 0; i < m.getAssessments().size(); i++) {
-                if (!m.getAssessments().get(i).getAssessmentName().equals("Final Exam")) 
-                series.getData().add(new XYChart.Data(m.getAssessments().get(i).getAssessmentName(),(m.getAssessments().get(i).getPercentage())));  
-            }
-            data.add(series);
-            lineChart.getData().add(series);
-        }
-        Scene scene = new Scene(lineChart,832,600);
-        Platform.setImplicitExit(false);
-        return scene;
-    }
-    
-    public void updateStats() {
-        cur_wam.setText(String.valueOf(MyUniTracker.calculateWAM(false)));
-        expect_wam.setText(String.valueOf(MyUniTracker.expectedWAM(false)));
-        core_wam.setText(String.valueOf(MyUniTracker.calculateWAM(true)));
-        core_expectwam.setText(String.valueOf(MyUniTracker.expectedWAM(true)));
-        cur_gpa.setText(String.valueOf(MyUniTracker.calculateGPA()));
-        expect_gpa.setText(String.valueOf(MyUniTracker.expectedGPA()));
-        this.repaint();
-    } 
-    
-    public void updateGraph() {
-        final String[] colour = new String[] {"#f3622d","#fba71b","#57b757","#44aaca","#4258c9","#9a42c8","#c84164","#888888"};
-        Platform.runLater(new Runnable() {
-            @Override public void run() {
-                for (XYChart.Series s: data) {
-                    s.getData().clear();
-                }
-                lineChart.getData().clear();
-                int k = 0;
-                for (Unit unit : MyUniTracker.units) {
-                    if (unit.isDisplayed()) {
-                        XYChart.Series series = new XYChart.Series();
-                        tab.setForegroundAt(k, Color.decode(colour[k%colour.length]));
-                        k++;
-                        series.setName(unit.getUnitName());
-                        for (int i = 0; i < unit.getAssessments().size(); i++) {
-                            if (!unit.getAssessments().get(i).getAssessmentName().equals("Final Exam")) 
-                                series.getData().add(new XYChart.Data(unit.getAssessments().get(i).getAssessmentName(),(unit.getAssessments().get(i).getPercentage())));  
-                        }
-                        data.add(series);
-                        lineChart.getData().add(series);
-                    }
-                }
-            }
-        });
     }
     
     private class Dialog extends JFrame {
@@ -615,14 +629,14 @@ public class CombinedPanel extends JPanel {
         private void initialise() {
             JPanel pane = new JPanel();
             pane.setLayout(new GridBagLayout());
-            pane.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+            pane.setBackground(Color.WHITE);
             String[] grades = new String[] {"HD", "D", "CR","P","N"};
             
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.insets = new Insets(3,5,5,3);
             gbc.anchor = GridBagConstraints.EAST;
             
-            JLabel name = new JLabel("Unit Name:");
+            JLabel name = new JLabel("Unit Code:");
             name.setFont(fontText);
             gbc.gridx = 0;
             gbc.gridy = 0;
@@ -662,7 +676,7 @@ public class CombinedPanel extends JPanel {
             pane.add(gradeComboBox, gbc);
             gbc.fill = GridBagConstraints.NONE;
             
-            JLabel core_unit = new JLabel("Is core unit:");
+            JLabel core_unit = new JLabel("Core Unit:");
             core_unit.setFont(fontText);
             gbc.anchor = GridBagConstraints.EAST;
             gbc.gridx = 0;
@@ -709,7 +723,7 @@ public class CombinedPanel extends JPanel {
                 pane.add(credit_points,gbc);
                 
                 core_unitCheck.setSelected(result.isCoreUnit());
-                core_unitCheck.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+                core_unitCheck.setBackground(Color.WHITE);
                 gbc.anchor = GridBagConstraints.WEST;
                 gbc.gridx = 1;
                 gbc.gridy = 4;
@@ -721,15 +735,27 @@ public class CombinedPanel extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         result.setUnitName(unit_name.getText());
-                        result.setFinalGrade((String)gradeComboBox.getSelectedItem());
+                        result.setFinalGrade(UnitReader.getGrade((String)gradeComboBox.getSelectedItem()));
                         result.setFinalMark(Double.parseDouble(final_mark.getText()));
                         result.setCreditPoints(Double.parseDouble(credit_points.getText()));
                         result.setCoreUnit(core_unitCheck.isSelected());
+                        past_unitsCB.removeAllItems();
+                        for (Unit u : MyUniTracker.past_results) 
+                            past_unitsCB.addItem(u.getUnitName());
+                        if (past_unitsCB.getItemCount() == 0) {
+                            removePast_result.setEnabled(false);
+                            editPast_result.setEnabled(false);
+                            past_unitsCB.setEnabled(false);
+                        } else {
+                            editPast_result.setEnabled(true);
+                            editPast_result.setEnabled(true);
+                            past_unitsCB.setEnabled(true);
+                        }
                         close();
                     }
                 });
             } else {
-                unit_name = new JTextField("Unit Name");
+                unit_name = new JTextField("Unit Code");
                 unit_name.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 unit_name.setFont(fontText);
                 gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -748,7 +774,7 @@ public class CombinedPanel extends JPanel {
                 pane.add(final_mark,gbc);
                 gbc.fill = GridBagConstraints.NONE;
 
-                credit_points = new JTextField(String.valueOf(MyUniTracker.DEFAULT_CREDIT));
+                credit_points = new JTextField(String.valueOf(MyUniTracker.getDefaultCredit()));
                 credit_points.setFont(fontText);
                 credit_points.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -757,7 +783,7 @@ public class CombinedPanel extends JPanel {
                 pane.add(credit_points,gbc);
                 
                 core_unitCheck.setSelected(true);
-                core_unitCheck.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+                core_unitCheck.setBackground(Color.WHITE);
                 gbc.anchor = GridBagConstraints.WEST;
                 gbc.gridx = 1;
                 gbc.gridy = 4;
@@ -767,12 +793,23 @@ public class CombinedPanel extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         Unit res = new Unit(unit_name.getText(),Double.parseDouble(credit_points.getText()));
-                        res.setFinalGrade((String)gradeComboBox.getSelectedItem());
+                        res.setFinalGrade(UnitReader.getGrade((String)gradeComboBox.getSelectedItem()));
                         res.setFinalMark(Double.parseDouble(final_mark.getText()));
                         res.setCoreUnit(core_unitCheck.isSelected());
                         MyUniTracker.past_results.add(res);
+                        past_unitsCB.removeAllItems();
+                        for (Unit u : MyUniTracker.past_results) 
+                            past_unitsCB.addItem(u.getUnitName());
+                        if (past_unitsCB.getItemCount() == 0) {
+                            removePast_result.setEnabled(false);
+                            editPast_result.setEnabled(false);
+                            past_unitsCB.setEnabled(false);
+                        } else {
+                            removePast_result.setEnabled(true);
+                            editPast_result.setEnabled(true);
+                            past_unitsCB.setEnabled(true);
+                        }
                         close();
-                        past_unitsCB.addItem(res.getUnitName());
                         
                     }
                 });
@@ -787,6 +824,6 @@ public class CombinedPanel extends JPanel {
             add(pane);
         }
         
-        private void close() { this.setVisible(false); this.dispose(); updateStats(); }
+        private void close() { this.setVisible(false); this.dispose(); updateAll(); }
     }
 }

@@ -24,10 +24,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.main.myunitracker;
+package org.myunitracker.main;
 
 import java.io.*;
-import org.main.gui.MyUniTrackerGUI;
+import org.myunitracker.gui.MyUniTrackerGUI;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -36,17 +36,17 @@ import javax.swing.SwingConstants;
 
 /**
  * An Application designed to track university students units one semester at a
- * time, as well as an overview of their past results.
+ time, as well as an overview of their past grade.
  * @author Samuel Heath
  */
 public class MyUniTracker {
     
     public static ArrayList<Unit> units;
     public static ArrayList<Unit> past_results;
-    public static double GPA;
-    public static double WAM;
-    public static boolean isCurtin = false;
-    public static double DEFAULT_CREDIT = 6.0;
+    private static double GPA;
+    private static double WAM;
+    private static boolean isCurtin = false;
+    private static double DEFAULT_CREDIT = 6.0;
     
     /*
      * @return Whether user is a curtin student or not.
@@ -64,6 +64,8 @@ public class MyUniTracker {
         } else { DEFAULT_CREDIT = 6.0; }
     }
     
+    public static double getDefaultCredit() { return DEFAULT_CREDIT; }
+    
     /**
      * @param past_result  The name of the unit in the past result.
      * @return             The stored result if it exists.
@@ -76,19 +78,32 @@ public class MyUniTracker {
     }
     
     /**
-     * @return    The user's current GPA based on past results they have entered.
+     * @return    The user's current GPA based on past grade they have entered.
      */
     public static double calculateGPA() {
         double credit = 0.0;
         double sum = 0.0;
-        for (int i = 0; i < past_results.size(); i++) {
-            double cred = past_results.get(i).getCreditPoints();
-            switch (past_results.get(i).getFinalGrade()) {
-                case "HD": sum += cred*7.0; credit += cred; break;
-                case "D": sum += cred*6.0; credit += cred; break;
-                case "CR": sum += cred*5.0; credit += cred; break;
-                case "P": sum+= cred*4.0; credit += cred; break;
-                default: sum+= 0.0; break;
+        if (!isCurtin()) {
+            for (int i = 0; i < past_results.size(); i++) {
+                double cred = past_results.get(i).getCreditPoints();
+                switch (past_results.get(i).getIntFinalGrade()) {
+                    case 0: sum += cred*7.0; credit += cred; break;
+                    case 1: sum += cred*6.0; credit += cred; break;
+                    case 2: sum += cred*5.0; credit += cred; break;
+                    case 3: sum+= cred*4.0; credit += cred; break;
+                    default: sum+= 0.0; break;
+                }
+            }
+        } else {
+            for (int i = 0; i < past_results.size(); i++) {
+                double cred = past_results.get(i).getCreditPoints();
+                switch (past_results.get(i).getIntFinalGrade()) {
+                    case 0: sum += cred*4.0; credit += cred; break;
+                    case 1: sum += cred*3.0; credit += cred; break;
+                    case 2: sum += cred*2.0; credit += cred; break;
+                    case 3: sum+= cred*1.0; credit += cred; break;
+                    default: sum+= 0.0; break;
+                }
             }
         }
         return (double)Math.round(sum/credit*1000d)/1000d;
@@ -100,26 +115,49 @@ public class MyUniTracker {
     public static double expectedGPA() {
         int total_credit = 0;
         double total_sum = 0.0;
-        for (int i = 0; i < past_results.size(); i++) {
-            double cred = past_results.get(i).getCreditPoints();
-            String results = past_results.get(i).getFinalGrade();
-            switch (results) {
-                case "HD": total_sum += cred*7.0; total_credit += cred; break;
-                case "D": total_sum += cred*6.0; total_credit += cred; break;
-                case "CR": total_sum += cred*5.0; total_credit += cred; break;
-                case "P": total_sum += cred*4.0; total_credit += cred; break;
-                default: total_sum+= 0.0; break;
+        double[] grade_ptsCurt = new double[] {4.0,3.0,2.0,1.0};
+        double[] grade_ptsUWA = new double[] { 7.0,6.0,5.0,4.0};
+        if (!isCurtin()) {
+            for (int i = 0; i < past_results.size(); i++) {
+                double cred = past_results.get(i).getCreditPoints();
+                switch (past_results.get(i).getIntFinalGrade()) {
+                    case Unit.GRADE_HD: total_sum += cred*grade_ptsUWA[0]; total_credit += cred; break;
+                    case Unit.GRADE_D: total_sum += cred*grade_ptsUWA[1]; total_credit += cred; break;
+                    case Unit.GRADE_CR: total_sum += cred*grade_ptsUWA[2]; total_credit += cred; break;
+                    case Unit.GRADE_P: total_sum += cred*grade_ptsUWA[3]; total_credit += cred; break;
+                    default: total_sum+= 0.0; break;
+                }
             }
-        }
-        for (int i = 0; i < units.size(); i++) {
-            double cred = units.get(i).getCreditPoints();
-            String results = units.get(i).getGrade();
-            switch (results) {
-                case "HD": total_sum += cred*7.0; total_credit += cred; break;
-                case "D": total_sum += cred*6.0; total_credit += cred; break;
-                case "CR": total_sum += cred*5.0; total_credit += cred; break;
-                case "P": total_sum += cred*4.0; total_credit += cred; break;
-                default: total_sum += 0.0; break;
+            for (int i = 0; i < units.size(); i++) {
+                double cred = units.get(i).getCreditPoints();
+                switch (units.get(i).getGrade()) {
+                    case 0: total_sum += cred*grade_ptsUWA[0]; total_credit += cred; break;
+                    case 1: total_sum += cred*grade_ptsUWA[1]; total_credit += cred; break;
+                    case 2: total_sum += cred*grade_ptsUWA[2]; total_credit += cred; break;
+                    case 3: total_sum += cred*grade_ptsUWA[3]; total_credit += cred; break;
+                    default: total_sum += 0.0; break;
+                }
+            }
+        } else {
+            for (int i = 0; i < past_results.size(); i++) {
+                double cred = past_results.get(i).getCreditPoints();
+                switch (past_results.get(i).getIntFinalGrade()) {
+                    case 0: total_sum += cred*grade_ptsCurt[0]; total_credit += cred; break;
+                    case 1: total_sum += cred*grade_ptsCurt[1]; total_credit += cred; break;
+                    case 2: total_sum += cred*grade_ptsCurt[2]; total_credit += cred; break;
+                    case 3: total_sum += cred*grade_ptsCurt[3]; total_credit += cred; break;
+                    default: total_sum += 0.0; break;
+                }
+            }
+            for (int i = 0; i < units.size(); i++) {
+                double cred = units.get(i).getCreditPoints();
+                switch (units.get(i).getGrade()) {
+                    case 0: total_sum += cred*grade_ptsCurt[0]; total_credit += cred; break;
+                    case 1: total_sum += cred*grade_ptsCurt[1]; total_credit += cred; break;
+                    case 2: total_sum += cred*grade_ptsCurt[2]; total_credit += cred; break;
+                    case 3: total_sum += cred*grade_ptsCurt[3]; total_credit += cred; break;
+                    default: total_sum += 0.0; break;
+                }
             }
         }
         return (double)Math.round(total_sum/(double)total_credit*1000d)/1000d;
@@ -163,11 +201,11 @@ public class MyUniTracker {
         for (int i = 0; i < units.size(); i++) {
             if (majorWAM) {
                 if (units.get(i).isCoreUnit()) {
-                    sum += units.get(i).getWeightedMark()*units.get(i).getCreditPoints();
+                    sum += units.get(i).getPercentage()*units.get(i).getCreditPoints();
                     credit += units.get(i).getCreditPoints();
                 }
             } else {
-                sum += units.get(i).getWeightedMark()*units.get(i).getCreditPoints();
+                sum += units.get(i).getPercentage()*units.get(i).getCreditPoints();
                 credit += units.get(i).getCreditPoints();
             }
         }
@@ -184,6 +222,9 @@ public class MyUniTracker {
      */
     public ArrayList<Unit> getGrades() { return this.past_results; }
     
+    /**
+     * Writes the data to a file on exit.
+     */
     public static void writeToFile() {
         try {
             File f = new File("units.txt");
@@ -245,12 +286,12 @@ public class MyUniTracker {
         window.setLocationRelativeTo(null);
         window.setVisible(true);
         try {
-            Thread.sleep(5000);
+            Thread.sleep(6000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         window.setVisible(false);
-        MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",1118,688);
+        MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",1200,800);
         MUT.getTabbedPane().setSelectedIndex(MUT.getTabbedPane().getTabCount()-1);
         System.out.println(System.currentTimeMillis() - time);
     }

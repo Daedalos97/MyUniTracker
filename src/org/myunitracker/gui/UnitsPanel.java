@@ -24,14 +24,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.main.gui;
+package org.myunitracker.gui;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import org.main.myunitracker.Unit;
+import org.myunitracker.main.Unit;
 
 /**
  * @author Samuel Heath
@@ -43,19 +44,21 @@ public class UnitsPanel extends JPanel {
         
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        p.setBackground(Color.decode("#eeeeee"));
+        gbc.insets = new Insets(5,5,5,5);
+        p.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
         
         GraphPanel gp = new GraphPanel(unit);
-        gp.setBackground(Color.decode("#eeeeee"));
+        gp.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+        gbc.insets = new Insets(5,0,5,5);
         gbc.gridheight = 2;
         gbc.gridx = 1;
         gbc.gridy = 0;
         p.add(gp,gbc);
         
         FormPanel fp = new FormPanel(unit,gp);
-        fp.setBackground(Color.decode("#eeeeee"));
+        fp.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
         gbc.anchor = GridBagConstraints.NORTH;
-        gbc.insets = new Insets(0,5,5,0);
+        gbc.insets = new Insets(0,5,10,0);
         gbc.gridx = 0;
         gbc.gridy = 0;
         p.add(fp,gbc);

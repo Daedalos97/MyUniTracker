@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.main.myunitracker;
+package org.myunitracker.main;
 
 public class Assessment {
     

@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.main.gui;
+package org.myunitracker.gui;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -37,7 +37,7 @@ import javax.swing.UIManager;
 import java.util.ArrayList;
 import java.awt.event.WindowAdapter;
 
-import org.main.myunitracker.MyUniTracker;
+import org.myunitracker.main.MyUniTracker;
 
 /**
  * The main component of the GUI
@@ -50,7 +50,7 @@ public class MyUniTrackerGUI extends JFrame {
     private static CombinedPanel CP;
     public static final Color BACKGROUND_COLOUR = Color.decode("#83C0E6");
     public static final Color BACKGROUND_COLOUR01 = Color.decode("#eeeeee");
-    public static final Font fontTitle = new Font("Arial", Font.PLAIN, 14), fontSubTitle = new Font("Arial", Font.PLAIN,13), fontText = new Font("Arial", Font.PLAIN,12);
+    public static final Font fontTitle = new Font("Arial", Font.BOLD, 14), fontSubTitle = new Font("Arial", Font.BOLD,13), fontText = new Font("Arial", Font.PLAIN,13);
     //D9B679, White, 83C0E6, E6A983
     
     /**
@@ -66,19 +66,22 @@ public class MyUniTrackerGUI extends JFrame {
         HEIGHT = height;
         
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(WIDTH, HEIGHT);
         this.setMinimumSize(new java.awt.Dimension(WIDTH,HEIGHT));
         this.setLocationRelativeTo(null);
         setLookFeel();
+        if (System.getProperty("os.name").startsWith("Mac")) {
+            this.setSize(WIDTH+10,HEIGHT);
+        } else {
+            this.setSize(WIDTH, HEIGHT);
+        }
         
         //Data set up
         List<Image> icons = new ArrayList();
-        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker512.png")).getImage());
-        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker256.png")).getImage());
-        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker128.png")).getImage());
-        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker64.png")).getImage());
-        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker32.png")).getImage());
-        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MyUniTracker16.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT512.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT256.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT128.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT64.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT32.png")).getImage());
         this.setIconImages(icons);
         
         tab = new JTabbedPane();
@@ -95,6 +98,7 @@ public class MyUniTrackerGUI extends JFrame {
         
         this.add(tab);
         this.setResizable(true);
+        this.pack();
         this.setVisible(true);
     }
     
@@ -121,7 +125,7 @@ public class MyUniTrackerGUI extends JFrame {
     /**
      * Changes the look and feel of the GUI, based on the Operating System.
      */
-    private void setLookFeel(){
+    private void setLookFeel() {
         try {
             if (System.getProperty("os.name").startsWith("Windows")){
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -138,6 +142,7 @@ public class MyUniTrackerGUI extends JFrame {
             } else {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
+            
         } catch (Exception exc){
             System.out.println(exc.getMessage());
         }

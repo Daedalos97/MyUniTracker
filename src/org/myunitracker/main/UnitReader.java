@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.main.myunitracker;
+package org.myunitracker.main;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,12 +41,23 @@ public class UnitReader {
     private ArrayList<Unit> units;
     private ArrayList<Unit> past_units;
     
-    /**
-     * @param filepath The location of the file we wish to read/store information.
-     */
     public UnitReader() {
         units = new ArrayList(2);
         past_units = new ArrayList(2);
+    }
+    
+    public static int getGrade(String grade) {
+        int i = Unit.GRADE_N;
+        if (grade == "HD") {
+            i = Unit.GRADE_HD;
+        } else if (grade == "D") {
+            i = Unit.GRADE_D;
+        } else if (grade == "CR") {
+            i = Unit.GRADE_CR;
+        } else if (grade == "P") {
+            i = Unit.GRADE_P;
+        }
+        return i;
     }
     
     /**
@@ -90,7 +101,7 @@ public class UnitReader {
                 } else {
                     u.setCoreUnit(false);
                 }
-                u.setFinalGrade(sub[2]);
+                u.setFinalGrade(getGrade(sub[2]));
                 u.setFinalMark(Double.parseDouble(sub[3]));
                 past_units.add(u);   
             } else if (sub[0].contains("[Curtin-Student]")) {
@@ -110,19 +121,4 @@ public class UnitReader {
      * @return The past past_units of this student.
      */
     public ArrayList<Unit> getGrades() { return this.past_units; }
-    
-    /**
-     * Outputs the unit information in the terminal. REDUNDANT
-     */
-    public void printUnits() {
-        for (int i = 0; i < units.size(); i++) {
-            Unit u = units.get(i);
-            System.out.println();
-            System.out.println("Unit: " + u.getUnitName() + ":");
-            for (int j = 0; j < units.get(i).getAssessments().size(); j++) {
-                System.out.println(units.get(i).getAssessments().get(j).toString());
-            }
-            System.out.println("Overall Mark: " + u.getWeightedMark() + " Grade: " + u.getGrade() + " Mark Needed For HD: " + u.percentForGrade("HD"));
-        }
-    }
 }

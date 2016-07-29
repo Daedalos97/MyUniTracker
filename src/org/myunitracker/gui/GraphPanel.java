@@ -24,9 +24,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.main.gui;
+package org.myunitracker.gui;
 
-import org.main.myunitracker.Assessment;
+import org.myunitracker.main.Assessment;
 import javax.swing.JPanel;
 import javafx.scene.chart.LineChart;
 import javafx.embed.swing.JFXPanel;
@@ -37,7 +37,7 @@ import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 import javax.swing.SwingUtilities;
-import org.main.myunitracker.Unit;
+import org.myunitracker.main.Unit;
 
 
 /**
@@ -87,7 +87,7 @@ public class GraphPanel extends JPanel {
             if (!a.getAssessmentName().equals("Final Exam")) 
             series.getData().add(new XYChart.Data(a.getAssessmentName(),(a.getPercentage())));
         }
-        Scene scene = new Scene(lineChart,826,600);
+        Scene scene = new Scene(lineChart,876,702);
         lineChart.setLegendVisible(false);
         lineChart.getData().add(series);
         Platform.setImplicitExit(false);

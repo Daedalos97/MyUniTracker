@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.main.gui;
+package org.myunitracker.gui;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -42,9 +42,10 @@ import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import org.main.myunitracker.Unit;
-import org.main.myunitracker.Assessment;
-import org.main.myunitracker.MyUniTracker;
+import org.myunitracker.main.Unit;
+import org.myunitracker.main.Assessment;
+import org.myunitracker.main.MyUniTracker;
+import org.myunitracker.main.UnitReader;
 
 /**
  * @author Samuel James Serwan Heath
@@ -58,7 +59,7 @@ public class FormPanel extends JPanel implements ActionListener {
     private JComboBox<String> assessmentsCB;
     private JTabbedPane tab;
     private GraphPanel gp;
-    private Font fontTitle = new Font("Arial", Font.PLAIN, 14), fontSubTitle = new Font("Arial", Font.PLAIN,13), fontText = new Font("Arial", Font.PLAIN,12);
+    private Font fontTitle = MyUniTrackerGUI.fontTitle, fontSubTitle = MyUniTrackerGUI.fontSubTitle, fontText = MyUniTrackerGUI.fontText;
     
     public FormPanel(Unit u, GraphPanel graphPane) {
         this.setLayout(new GridBagLayout());
@@ -86,7 +87,7 @@ public class FormPanel extends JPanel implements ActionListener {
          */
         
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5,0,0,0);
+        gbc.insets = new Insets(10,5,5,5);
         gbc.fill = GridBagConstraints.BOTH;
         
         JPanel assessPanel = new JPanel();
@@ -147,9 +148,6 @@ public class FormPanel extends JPanel implements ActionListener {
         assessPanel.add(edit,gbcAssess);
         
         remove = new JButton("Remove Assess");
-        if (unit.getAssessments().size() > 1) {
-            remove.setEnabled(true);
-        } else { remove.setEnabled(false); }
         remove.setFont(fontText);
         remove.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
         remove.setToolTipText("Removes the selected assessment");
@@ -173,6 +171,16 @@ public class FormPanel extends JPanel implements ActionListener {
         gbcAssess.gridy = 0;
         assessPanel.add(assessmentsCB,gbcAssess);
         
+        /*
+            Simply check to see if there are any assessments and if 
+        there is then allow users to use the edit and remove button,
+        if not then make sure that they cant because they makes no sense
+        and results in an error.
+        */
+        if (!unit.getAssessments().isEmpty()) { remove.setEnabled(true); edit.setEnabled(true);
+            assessmentsCB.setEnabled(true);
+        } else { remove.setEnabled(false); edit.setEnabled(false); assessmentsCB.setEnabled(false);}
+        
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -183,20 +191,30 @@ public class FormPanel extends JPanel implements ActionListener {
         remove.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (unit.getAssessments().size() > 1) {
-                    String s = (String)assessmentsCB.getSelectedItem();
-                    if (s.equals("Final Exam")) {
-                        unit.setHasFinal(false);
-                        finalMarkNeeded.doClick();
-                    }
-                    unit.removeAssessment(s);
-                    gp.updateGraph(unit);
+                String s = (String)assessmentsCB.getSelectedItem();
+                if (s.equals("Final Exam")) {
+                    unit.setHasFinal(false);
+                    finalMarkNeeded.doClick();
                 }
-                else remove.setEnabled(false);
+                unit.removeAssessment(s);
+                //Update the Graph
+                gp.updateGraph(unit);
                 assessmentsCB.removeAllItems();
-                for (Assessment a : unit.getAssessments())
-                    assessmentsCB.addItem(a.getAssessmentName());
+                for (Assessment a : unit.getAssessments()) { assessmentsCB.addItem(a.getAssessmentName()); }
+                if (assessmentsCB.getItemCount() == 0) {
+                    remove.setEnabled(false);
+                    edit.setEnabled(false);
+                    assessmentsCB.setEnabled(false);
+                } else {
+                    remove.setEnabled(true);
+                    edit.setEnabled(true);
+                    assessmentsCB.setEnabled(true);
+                }
                 unit.update();
+                curGrade.setText(unit.gradeToString(unit.getGrade()));
+                curMark.setText(String.valueOf(unit.getPercentage()));
+                finalMarkNeeded.doClick();
+                updatePanes();
             }
         });
         
@@ -231,7 +249,7 @@ public class FormPanel extends JPanel implements ActionListener {
         gbcStats.anchor = GridBagConstraints.CENTER;
         
         if (unit.hasFinal()) {
-            reqMark = new JLabel("Need " + unit.percentForGrade("HD") + " in final exam to get HD.");
+            reqMark = new JLabel("Need " + unit.percentForGrade(0) + " in final exam to get HD.");
             reqMark.setFont(fontText);
             gbcStats.gridwidth = 2;
             gbcStats.gridx = 0;
@@ -265,7 +283,7 @@ public class FormPanel extends JPanel implements ActionListener {
         gbcStats.gridy = 3;
         statsPanel.add(gradeLabel,gbcStats);
         
-        curGrade = new JLabel(unit.getGrade());
+        curGrade = new JLabel(unit.gradeToString(unit.getGrade()));
         curGrade.setFont(fontText);
         gbcStats.anchor = GridBagConstraints.WEST;
         gbcStats.gridx = 1;
@@ -281,7 +299,7 @@ public class FormPanel extends JPanel implements ActionListener {
         statsPanel.add(markLabel,gbcStats); 
         gbcStats.anchor = GridBagConstraints.CENTER;
         
-        curMark = new JLabel(String.valueOf(unit.getWeightedMark()));
+        curMark = new JLabel(String.valueOf(unit.getPercentage()));
         curMark.setFont(fontText);
         gbcStats.anchor = GridBagConstraints.WEST;
         gbcStats.gridx = 1;
@@ -294,7 +312,7 @@ public class FormPanel extends JPanel implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 if (unit.hasFinal()) {
                     String grade = (String) finalGradeCB.getSelectedItem();
-                    reqMark.setText("Need " + unit.percentForGrade(grade) + " in final exam to get " + grade + ".");
+                    reqMark.setText("Need " + unit.percentForGrade(UnitReader.getGrade(grade)) + " in final exam to get " + grade + ".");
                 } else {
                     reqMark.setText("No final exam has been added to this unit.");
                 }
@@ -310,7 +328,7 @@ public class FormPanel extends JPanel implements ActionListener {
         gbcUnit.insets = new Insets(3,3,3,3);
         final int unitColNum = 8;
 
-        JLabel name = new JLabel("Unit Name:");
+        JLabel name = new JLabel("Unit Code:");
         name.setFont(fontText);
         gbcUnit.gridx = 0;
         gbcUnit.gridy = 0;
@@ -398,7 +416,7 @@ public class FormPanel extends JPanel implements ActionListener {
      * Updates other panels in the application
      */
     private void updatePanes() { MyUniTrackerGUI.getCombinedPanel().updateStats(); 
-    MyUniTrackerGUI.getCombinedPanel().updateGraph(); MyUniTrackerGUI.getCombinedPanel().updateCheckBoxes(); gp.updateGraph(unit);}
+    MyUniTrackerGUI.getCombinedPanel().updateGraph(); MyUniTrackerGUI.getCombinedPanel().updateAll(); gp.updateGraph(unit);}
     
     @Override
     public void actionPerformed(ActionEvent event) {}
@@ -423,6 +441,7 @@ public class FormPanel extends JPanel implements ActionListener {
         
         private void initialise(Assessment a) {
             JPanel p = new JPanel();
+            p.setBackground(Color.WHITE);
             p.setLayout(new GridBagLayout());
             GridBagConstraints c = new GridBagConstraints();
             c.insets = new Insets(3,3,3,3);
@@ -466,18 +485,22 @@ public class FormPanel extends JPanel implements ActionListener {
                     
             if (a == null) {
                 edit_assessname = new JTextField("Assessment");
+                edit_assessname.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 c.gridx = 1;
                 c.gridy = 0;
                 p.add(edit_assessname,c);
                 edit_mark = new JTextField("1");
+                edit_mark.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 c.gridx = 1;
                 c.gridy = 1;
                 p.add(edit_mark,c);
                 edit_outOf = new JTextField("10");
+                edit_outOf.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 c.gridx = 1;
                 c.gridy = 2;
                 p.add(edit_outOf,c);
                 edit_weight = new JTextField("5");
+                edit_weight.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 c.gridx = 1;
                 c.gridy = 3;
                 p.add(edit_weight,c);
@@ -490,10 +513,18 @@ public class FormPanel extends JPanel implements ActionListener {
                             assessmentsCB.removeAllItems();
                             for (Assessment a : unit.getAssessments())
                                 assessmentsCB.addItem(a.getAssessmentName());
-                            remove.setEnabled(true);
+                            if (assessmentsCB.getItemCount() == 0) {
+                                remove.setEnabled(false);
+                                edit.setEnabled(false);
+                                assessmentsCB.setEnabled(false);
+                            } else {
+                                remove.setEnabled(true);
+                                edit.setEnabled(true);
+                                assessmentsCB.setEnabled(true);
+                            }
                             unit.update();
-                            curGrade.setText(unit.getGrade());
-                            curMark.setText(String.valueOf(unit.getWeightedMark()));
+                            curGrade.setText(unit.gradeToString(unit.getGrade()));
+                            curMark.setText(String.valueOf(unit.getPercentage()));
                             finalMarkNeeded.doClick();
                             updatePanes();
                         } else {
@@ -504,18 +535,22 @@ public class FormPanel extends JPanel implements ActionListener {
                 });
             } else {
                 edit_assessname = new JTextField(ass.getAssessmentName());
+                edit_assessname.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 c.gridx = 1;
                 c.gridy = 0;
                 p.add(edit_assessname,c);
                 edit_mark = new JTextField(String.valueOf(ass.getMark()));
+                edit_mark.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 c.gridx = 1;
                 c.gridy = 1;
                 p.add(edit_mark,c);
                 edit_outOf = new JTextField(String.valueOf(ass.getOutOf()));
+                edit_outOf.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 c.gridx = 1;
                 c.gridy = 2;
                 p.add(edit_outOf,c);
                 edit_weight = new JTextField(String.valueOf(ass.getAssessmentWeight()));
+                edit_weight.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 c.gridx = 1;
                 c.gridy = 3;
                 p.add(edit_weight,c);
@@ -531,9 +566,18 @@ public class FormPanel extends JPanel implements ActionListener {
                             assessmentsCB.removeAllItems();
                             for (Assessment a : unit.getAssessments())
                                 assessmentsCB.addItem(a.getAssessmentName());
+                            if (assessmentsCB.getItemCount() == 0) {
+                                remove.setEnabled(false);
+                                edit.setEnabled(false);
+                                assessmentsCB.setEnabled(false);
+                            } else {
+                                remove.setEnabled(true);
+                                edit.setEnabled(true);
+                                assessmentsCB.setEnabled(true);
+                            }
                             unit.update();
-                            curGrade.setText(unit.getGrade());
-                            curMark.setText(String.valueOf(unit.getWeightedMark()));
+                            curGrade.setText(unit.gradeToString(unit.getGrade()));
+                            curMark.setText(String.valueOf(unit.getPercentage()));
                             finalMarkNeeded.doClick();
                             updatePanes();
                         } else {
