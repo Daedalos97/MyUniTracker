@@ -47,3 +47,4 @@ Temporary Items
 .apdisk
 /dist/
 /build/
+/nbproject/private/
