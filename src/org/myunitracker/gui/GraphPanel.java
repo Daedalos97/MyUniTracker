@@ -87,7 +87,7 @@ public class GraphPanel extends JPanel {
             if (!a.getAssessmentName().equals("Final Exam")) 
             series.getData().add(new XYChart.Data(a.getAssessmentName(),(a.getPercentage())));
         }
-        Scene scene = new Scene(lineChart,876,702);
+        Scene scene = new Scene(lineChart,676,669);
         lineChart.setLegendVisible(false);
         lineChart.getData().add(series);
         Platform.setImplicitExit(false);

@@ -291,7 +291,7 @@ public class MyUniTracker {
             e.printStackTrace();
         }
         window.setVisible(false);
-        MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",1200,800);
+        MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",1000,767);
         MUT.getTabbedPane().setSelectedIndex(MUT.getTabbedPane().getTabCount()-1);
         System.out.println(System.currentTimeMillis() - time);
     }

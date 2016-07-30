@@ -521,7 +521,7 @@ public class CombinedPanel extends JPanel {
             data.add(series);
             lineChart.getData().add(series);
         }
-        Scene scene = new Scene(lineChart,889,702);
+        Scene scene = new Scene(lineChart,689,669);
         Platform.setImplicitExit(false);
         return scene;
     }

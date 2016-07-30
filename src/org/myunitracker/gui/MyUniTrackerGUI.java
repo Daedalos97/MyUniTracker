@@ -66,14 +66,13 @@ public class MyUniTrackerGUI extends JFrame {
         HEIGHT = height;
         
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setMinimumSize(new java.awt.Dimension(WIDTH,HEIGHT));
-        this.setLocationRelativeTo(null);
         setLookFeel();
         if (System.getProperty("os.name").startsWith("Mac")) {
-            this.setSize(WIDTH+10,HEIGHT);
+            this.setSize(WIDTH+17,HEIGHT);
         } else {
             this.setSize(WIDTH, HEIGHT);
         }
+        this.setLocationRelativeTo(null);
         
         //Data set up
         List<Image> icons = new ArrayList();
@@ -98,7 +97,6 @@ public class MyUniTrackerGUI extends JFrame {
         
         this.add(tab);
         this.setResizable(true);
-        this.pack();
         this.setVisible(true);
     }
     
