@@ -16,66 +16,78 @@
 
 package org.myunitracker.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import javax.swing.JCheckBox;
 import java.awt.Color;
-import javafx.scene.chart.CategoryAxis;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.HashMap;
 import java.awt.Insets;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javafx.embed.swing.JFXPanel;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
+import javafx.scene.chart.CategoryAxis;
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.chart.LineChart;
-import java.util.Map;
 import javafx.scene.chart.NumberAxis;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.myunitracker.main.Unit;
 import javafx.scene.chart.XYChart;
-import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JTextField;
-import org.myunitracker.main.MyUniTracker;
-import java.awt.event.WindowAdapter;
-import javax.swing.SwingUtilities;
-import org.myunitracker.main.UnitReader;
 
-/*
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+
+//MyUniTracker Imports
+import org.myunitracker.main.MyUniTracker;
+import org.myunitracker.main.Unit;
+
+
+/* GridBoxLayout Styling
 int gridx,int gridy,int gridwidth,int gridheight,double weightx, double weighty,
 int anchor,int fill,Insets insets,int ipadx,int ipady
 */
 
 /**
- * @author Sam
+ * @author Samuel James Serwan Heath
  */
 public class CombinedPanel extends JPanel {
     
-    private final String[] colour = new String[] {"#f3622d","#fba71b","#57b757","#44aaca","#4258c9","#9a42c8","#c84164","#888888"};
     private ArrayList<XYChart.Series> data;
     private JButton removePast_result, editPast_result;
     private JComboBox past_unitsCB;
     private JLabel cur_wam,expect_wam,core_wam,cur_gpa,expect_gpa,core_expectwam;
     private JPanel checkBoxPanel;
     private JTabbedPane tab;
-    private Font fontTitle = MyUniTrackerGUI.fontTitle, fontSubTitle = MyUniTrackerGUI.fontSubTitle, fontText = MyUniTrackerGUI.fontText;
+    private Font fontTitle = MyUniTrackerGUI.FONT_TITLE, fontSubTitle = MyUniTrackerGUI.fontSubTitle, fontText = MyUniTrackerGUI.fontText;
     private LineChart<String,Number> lineChart;
     private Map<JCheckBox,String> checkMap;
+    //All the colours the FXGraph uses.
+    private final String[] colour = new String[] {"#f3622d","#fba71b","#57b757","#44aaca","#4258c9","#9a42c8","#c84164","#888888"};
     
     public CombinedPanel() {
         this.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR);
         tab = MyUniTrackerGUI.getTabbedPane();
         
+        initialisePanel();
+        
+        tab.setSelectedIndex(tab.getTabCount()-1);
+    }
+    
+    private void initialisePanel() {
+        //Make this panel thread safe.
         SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run() {
@@ -473,7 +485,6 @@ public class CombinedPanel extends JPanel {
                 setVisible(true);
             }
         });
-        tab.setSelectedIndex(tab.getTabCount()-1);
     }
     
     private Scene createScene() {

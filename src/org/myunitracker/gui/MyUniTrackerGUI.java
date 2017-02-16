@@ -18,15 +18,19 @@ package org.myunitracker.gui;
 
 import java.awt.Color;
 import java.awt.Font;
-import javax.swing.ImageIcon;
 import java.awt.Image;
-import java.util.List;
+import java.awt.event.WindowAdapter;
+
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
-import java.util.ArrayList;
-import java.awt.event.WindowAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
+//MyUniTracker Import
 import org.myunitracker.main.MyUniTracker;
 
 /**
@@ -40,7 +44,7 @@ public class MyUniTrackerGUI extends JFrame {
     private static CombinedPanel CP;
     public static final Color BACKGROUND_COLOUR = Color.decode("#83C0E6");
     public static final Color BACKGROUND_COLOUR01 = Color.decode("#eeeeee");
-    public static final Font fontTitle = new Font("Arial", Font.BOLD, 14), fontSubTitle = new Font("Arial", Font.BOLD,13), fontText = new Font("Arial", Font.PLAIN,13);
+    public static final Font FONT_TITLE = new Font("Arial", Font.BOLD, 14), fontSubTitle = new Font("Arial", Font.BOLD,13), fontText = new Font("Arial", Font.PLAIN,13);
     //D9B679, White, 83C0E6, E6A983
     
     /**
@@ -64,14 +68,8 @@ public class MyUniTrackerGUI extends JFrame {
         }
         this.setLocationRelativeTo(null);
         
-        //Data set up
-        List<Image> icons = new ArrayList();
-        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT512.png")).getImage());
-        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT256.png")).getImage());
-        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT128.png")).getImage());
-        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT64.png")).getImage());
-        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT32.png")).getImage());
-        this.setIconImages(icons);
+        //Add Icons
+        initialiseIcons();
         
         tab = new JTabbedPane();
         
@@ -83,11 +81,25 @@ public class MyUniTrackerGUI extends JFrame {
         }
         );
         
-        init();
+        //Sets up the tabs on the tabbed pane.
+        initialiseTabs();
         
         this.add(tab);
         this.setResizable(true);
         this.setVisible(true);
+    }
+    
+    /**
+     * Initialises the icons the application may use on different systems.
+     */
+    private void initialiseIcons() {
+        List<Image> icons = new ArrayList();
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT512.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT256.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT128.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT64.png")).getImage());
+        icons.add(new ImageIcon(MyUniTrackerGUI.class.getResource("images/MUT32.png")).getImage());
+        this.setIconImages(icons);
     }
     
     public static JTabbedPane getTabbedPane() {
@@ -98,7 +110,7 @@ public class MyUniTrackerGUI extends JFrame {
         return CP;
     }
     
-    private void init() {
+    private void initialiseTabs() {
         for (int i = 0; i < tab.getTabCount(); i++)
             tab.removeTabAt(i);
         for (int i = 0; i < MyUniTracker.units.size(); i++) {

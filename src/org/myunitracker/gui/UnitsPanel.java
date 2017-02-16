@@ -16,13 +16,14 @@
 
 package org.myunitracker.gui;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+
+//MyUniTracker Import
 import org.myunitracker.main.Unit;
+
 
 /**
  * @author Samuel Heath

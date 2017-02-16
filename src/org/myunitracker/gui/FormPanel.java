@@ -49,7 +49,7 @@ public class FormPanel extends JPanel implements ActionListener {
     private JComboBox<String> assessmentsCB;
     private JTabbedPane tab;
     private GraphPanel gp;
-    private Font fontTitle = MyUniTrackerGUI.fontTitle, fontSubTitle = MyUniTrackerGUI.fontSubTitle, fontText = MyUniTrackerGUI.fontText;
+    private Font fontTitle = MyUniTrackerGUI.FONT_TITLE, fontSubTitle = MyUniTrackerGUI.fontSubTitle, fontText = MyUniTrackerGUI.fontText;
     
     public FormPanel(Unit u, GraphPanel graphPane) {
         this.setLayout(new GridBagLayout());

@@ -16,34 +16,38 @@
 
 package org.myunitracker.gui;
 
-import org.myunitracker.main.Assessment;
 import javax.swing.JPanel;
-import javafx.scene.chart.LineChart;
+import javax.swing.SwingUtilities;
+
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 import javafx.application.Platform;
-import javax.swing.SwingUtilities;
+
+//MyUniTracker Imports
+import org.myunitracker.main.Assessment;
 import org.myunitracker.main.Unit;
 
 
 /**
- * @author Samuel Heath
+ * @author Samuel James Serwan Heath
  */
 public class GraphPanel extends JPanel {
     
-    private XYChart.Series series;
     private LineChart<String,Number> lineChart;
     private Unit unit;
+    private XYChart.Series series;
     
     public GraphPanel(Unit u) {
         setVisible(true);
         final JFXPanel fxPanel = new JFXPanel();
         this.unit = u;
         add(fxPanel);
+        //Make FX thread
         SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run() {
@@ -60,17 +64,20 @@ public class GraphPanel extends JPanel {
     private Scene createScene() {
         Stage s = new Stage();
         s.setTitle("Unit Progress");
+        
         //Defining the axes
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Assessments");
         yAxis.setLabel("Marks (%)");
         yAxis.setUpperBound(100.0);
-        //creating the chart
+        
+        //Creating the chart
         lineChart = new LineChart(xAxis,yAxis);
         lineChart.setTitle(unit.getUnitName() + " Progress");
         lineChart.setStyle(".default-color0.chart-series-line { -fx-stroke: #f0e68c; }");
-        //defining a series
+        
+        //Defining a series
         series = new XYChart.Series();
         series.setName(lineChart.getTitle());
         for (Assessment a : unit.getAssessments()) {
@@ -86,12 +93,12 @@ public class GraphPanel extends JPanel {
     }
     
     public void updateGraph(Unit u) {
-        final Unit unit = u;
+        final Unit unit_temp = u;
         Platform.runLater(new Runnable() {
             @Override public void run() {
                 series.getData().clear();
-                series.setName(unit.getUnitName());
-                for (Assessment a : unit.getAssessments()) {
+                series.setName(unit_temp.getUnitName());
+                for (Assessment a : unit_temp.getAssessments()) {
                     if (!a.getAssessmentName().equals("Final Exam")) {
                         series.getData().add(new XYChart.Data(a.getAssessmentName(),(a.getPercentage())));
                     }
