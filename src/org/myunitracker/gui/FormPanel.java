@@ -416,7 +416,7 @@ public class FormPanel extends JPanel implements ActionListener {
      * Updates other panels in the application
      */
     private void updatePanes() { MyUniTrackerGUI.getCombinedPanel().updateStats(); 
-    MyUniTrackerGUI.getCombinedPanel().updateGraph(); MyUniTrackerGUI.getCombinedPanel().updateAll(); gp.updateGraph(unit);}
+    MyUniTrackerGUI.getCombinedPanel().updateGraph(); MyUniTrackerGUI.getCombinedPanel().updateCheckBoxPanel(); gp.updateGraph(unit);}
     
     @Override
     public void actionPerformed(ActionEvent event) {}

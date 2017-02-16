@@ -126,7 +126,7 @@ public class CombinedPanel extends JPanel {
                 gbc.gridx = 0;
                 gbc.gridy = 2;
                 combinedGraphPanel.add(pastPanel,gbc);
-
+                
                 checkBoxPanel = new JPanel(new GridBagLayout());
                 checkBoxPanel.setBackground(java.awt.Color.WHITE);
                 checkBoxPanel.setBorder(BorderFactory.createTitledBorder("Display Units"));
@@ -134,7 +134,7 @@ public class CombinedPanel extends JPanel {
                 gbc.gridx = 0;
                 gbc.gridy = 3;
                 combinedGraphPanel.add(checkBoxPanel,gbc);
-
+                
                 final JFXPanel fxPanel = new JFXPanel();
                 JPanel graphPanel = new JPanel(new GridBagLayout());
                 gbc.insets = new Insets(10,5,10,10);
@@ -350,7 +350,7 @@ public class CombinedPanel extends JPanel {
                             UnitsPanel up = new org.myunitracker.gui.UnitsPanel(u);
                             up.setVisible(true);
                             tab.insertTab(u.getUnitName(),null,up,null,tab.getTabCount()-1);
-                            updateAll();
+                            updateCheckBoxPanel();
                             unit_name.setText("Unit Code");
                         }
                     }
@@ -444,7 +444,7 @@ public class CombinedPanel extends JPanel {
                 /*
                  * Check Box Panel and Listener Init.
                  */
-                updateAll();
+                updateCheckBoxPanel();
                 addListeners();
                 
                 add(combinedGraphPanel);
@@ -487,9 +487,17 @@ public class CombinedPanel extends JPanel {
                     editPast_result.setEnabled(true);
                     past_unitsCB.setEnabled(true);
                 }
-                updateAll();
+                updateCheckBoxPanel();
             }
         });
+    }
+    
+    private void setCheckBoxVisible() {
+        if (MyUniTracker.getCurrentUnitCount() > 0) {
+            checkBoxPanel.setVisible(true);
+        } else {
+            checkBoxPanel.setVisible(false);
+        }
     }
     
     private Scene createScene() {
@@ -558,7 +566,7 @@ public class CombinedPanel extends JPanel {
         });
     }
     
-    protected void updateAll() {
+    protected void updateCheckBoxPanel() {
         checkBoxPanel.removeAll();
         checkMap = new HashMap();
         
@@ -594,6 +602,7 @@ public class CombinedPanel extends JPanel {
             });
             unit.setForeground(Color.decode(colour[i%colour.length]));
         }
+        setCheckBoxVisible();
     }
     
     private class Dialog extends JFrame {

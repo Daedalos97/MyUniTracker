@@ -204,6 +204,10 @@ public class MyUniTracker {
      */
     public ArrayList<Unit> getGrades() { return this.past_results; }
     
+    public static int getCurrentUnitCount() {
+        return units.size();
+    }
+    
     /**
      * Writes the data to a file on exit.
      */
