@@ -98,7 +98,7 @@ public class Unit {
     public int getGrade() { return this.grade; }
     
     public static String gradeToString(int n) { 
-        String g = "";
+        String g = "N";
         int grad = n;
         if (n == GRADE_HD) { 
             g = "HD"; 

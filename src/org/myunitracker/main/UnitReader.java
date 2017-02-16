@@ -48,13 +48,13 @@ public class UnitReader {
     
     public static int getGrade(String grade) {
         int i = Unit.GRADE_N;
-        if (grade == "HD") {
+        if (grade.equals("HD")) {
             i = Unit.GRADE_HD;
-        } else if (grade == "D") {
+        } else if (grade.equals("D")) {
             i = Unit.GRADE_D;
-        } else if (grade == "CR") {
+        } else if (grade.equals("CR")) {
             i = Unit.GRADE_CR;
-        } else if (grade == "P") {
+        } else if (grade.equals("P")) {
             i = Unit.GRADE_P;
         }
         return i;
@@ -70,7 +70,7 @@ public class UnitReader {
             if (!f.exists()) {
                 f.createNewFile();
             }
-            scan = new Scanner(new FileReader("units.txt"));
+            scan = new Scanner(new FileReader(f.getAbsoluteFile()));
         } catch (IOException IOE) {}
         Unit u = new Unit("", 0);
         Assessment a = new Assessment(null,0.0,0.0,0.0);

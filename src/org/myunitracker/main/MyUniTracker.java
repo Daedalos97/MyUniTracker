@@ -91,7 +91,7 @@ public class MyUniTracker {
                     case 1: sum += cred*6.0; credit += cred; break;
                     case 2: sum += cred*5.0; credit += cred; break;
                     case 3: sum+= cred*4.0; credit += cred; break;
-                    default: sum+= 0.0; break;
+                    default: sum += 0.0; credit += cred; break;
                 }
             }
         } else {
@@ -102,7 +102,7 @@ public class MyUniTracker {
                     case 1: sum += cred*3.0; credit += cred; break;
                     case 2: sum += cred*2.0; credit += cred; break;
                     case 3: sum+= cred*1.0; credit += cred; break;
-                    default: sum+= 0.0; break;
+                    default: sum += 0.0; credit += cred; break;
                 }
             }
         }
@@ -125,7 +125,7 @@ public class MyUniTracker {
                     case Unit.GRADE_D: total_sum += cred*grade_ptsUWA[1]; total_credit += cred; break;
                     case Unit.GRADE_CR: total_sum += cred*grade_ptsUWA[2]; total_credit += cred; break;
                     case Unit.GRADE_P: total_sum += cred*grade_ptsUWA[3]; total_credit += cred; break;
-                    default: total_sum+= 0.0; break;
+                    default: total_sum += 0.0; total_credit += cred; break;
                 }
             }
             for (int i = 0; i < units.size(); i++) {
@@ -135,7 +135,7 @@ public class MyUniTracker {
                     case 1: total_sum += cred*grade_ptsUWA[1]; total_credit += cred; break;
                     case 2: total_sum += cred*grade_ptsUWA[2]; total_credit += cred; break;
                     case 3: total_sum += cred*grade_ptsUWA[3]; total_credit += cred; break;
-                    default: total_sum += 0.0; break;
+                    default: total_sum += 0.0; total_credit += cred; break;
                 }
             }
         } else {
@@ -146,7 +146,7 @@ public class MyUniTracker {
                     case 1: total_sum += cred*grade_ptsCurt[1]; total_credit += cred; break;
                     case 2: total_sum += cred*grade_ptsCurt[2]; total_credit += cred; break;
                     case 3: total_sum += cred*grade_ptsCurt[3]; total_credit += cred; break;
-                    default: total_sum += 0.0; break;
+                    default: total_sum += 0.0; total_credit += cred; break;
                 }
             }
             for (int i = 0; i < units.size(); i++) {
@@ -156,7 +156,7 @@ public class MyUniTracker {
                     case 1: total_sum += cred*grade_ptsCurt[1]; total_credit += cred; break;
                     case 2: total_sum += cred*grade_ptsCurt[2]; total_credit += cred; break;
                     case 3: total_sum += cred*grade_ptsCurt[3]; total_credit += cred; break;
-                    default: total_sum += 0.0; break;
+                    default: total_sum += 0.0; total_credit += cred; break;
                 }
             }
         }
@@ -231,7 +231,7 @@ public class MyUniTracker {
             if (!f.exists()) {
                 f.createNewFile();
             }
-            FileWriter fw = new FileWriter(f.getAbsoluteFile());
+            FileWriter fw = new FileWriter(f.getCanonicalFile());
             BufferedWriter b = new BufferedWriter(fw);
             b.write("[Curtin-Student] " + isCurtin());
             b.newLine();

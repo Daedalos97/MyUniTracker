@@ -392,16 +392,6 @@ public class CombinedPanel extends JPanel {
                 pastPanel.add(removePast_result,gbcPast);
                 
                 past_unitsCB = new JComboBox(past_unit_data);
-                past_unitsCB.addItemListener(new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        if (past_unitsCB.getItemCount() == 0) {
-                            removePast_result.setEnabled(false);
-                            editPast_result.setEnabled(false);
-                        } else {
-                        }
-                    }
-                });
                 
                 /*
                     Simply check to see if there are any past results and if 
@@ -614,15 +604,15 @@ public class CombinedPanel extends JPanel {
             setVisible(true);
         }
         
-        private String getGradeFromMark(double mark) {
-            switch ((int)Math.round(mark/10.0)) {
-                case 5: return "P";
-                case 6: return "CR";
-                case 7: return "D";
-                case 8: return "HD";
-                case 9: return "HD";
-                case 10: return "HD";
-                default: return "N";
+        private int getGradeFromMark(double mark) {
+            switch ((int)Math.floor(mark/10.0)) {
+                case 5: return Unit.GRADE_P;
+                case 6: return Unit.GRADE_CR;
+                case 7: return Unit.GRADE_D;
+                case 8: return Unit.GRADE_HD;
+                case 9: return Unit.GRADE_HD;
+                case 10: return Unit.GRADE_HD;
+                default: return Unit.GRADE_N;
             }
         }
         
@@ -630,7 +620,6 @@ public class CombinedPanel extends JPanel {
             JPanel pane = new JPanel();
             pane.setLayout(new GridBagLayout());
             pane.setBackground(Color.WHITE);
-            String[] grades = new String[] {"HD", "D", "CR","P","N"};
             
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.insets = new Insets(3,5,5,3);
@@ -643,12 +632,6 @@ public class CombinedPanel extends JPanel {
             pane.add(name,gbc);
             
             final JTextField unit_name;
-            
-            JLabel grade = new JLabel("Grade:");
-            grade.setFont(fontText);
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            pane.add(grade,gbc);
             
             JLabel mark = new JLabel("Mark:");
             mark.setFont(fontText);
@@ -665,16 +648,6 @@ public class CombinedPanel extends JPanel {
             pane.add(credit_pts,gbc);
             
             final JTextField credit_points;
-            
-            final JComboBox gradeComboBox = new JComboBox(grades);
-            gradeComboBox.setFont(fontText);
-            gradeComboBox.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-            gradeComboBox.setSelectedIndex(0);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.gridx = 1;
-            gbc.gridy = 1;
-            pane.add(gradeComboBox, gbc);
-            gbc.fill = GridBagConstraints.NONE;
             
             JLabel core_unit = new JLabel("Core Unit:");
             core_unit.setFont(fontText);
@@ -729,13 +702,11 @@ public class CombinedPanel extends JPanel {
                 gbc.gridy = 4;
                 pane.add(core_unitCheck,gbc);
                 
-                gradeComboBox.setSelectedItem((String) getGradeFromMark(result.getFinalMark()));
-                
                 add_button.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         result.setUnitName(unit_name.getText());
-                        result.setFinalGrade(UnitReader.getGrade((String)gradeComboBox.getSelectedItem()));
+                        result.setFinalGrade(getGradeFromMark(Double.parseDouble(final_mark.getText())));
                         result.setFinalMark(Double.parseDouble(final_mark.getText()));
                         result.setCreditPoints(Double.parseDouble(credit_points.getText()));
                         result.setCoreUnit(core_unitCheck.isSelected());
@@ -793,7 +764,7 @@ public class CombinedPanel extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         Unit res = new Unit(unit_name.getText(),Double.parseDouble(credit_points.getText()));
-                        res.setFinalGrade(UnitReader.getGrade((String)gradeComboBox.getSelectedItem()));
+                        res.setFinalGrade(getGradeFromMark(Double.parseDouble(final_mark.getText())));
                         res.setFinalMark(Double.parseDouble(final_mark.getText()));
                         res.setCoreUnit(core_unitCheck.isSelected());
                         MyUniTracker.past_results.add(res);
@@ -824,6 +795,6 @@ public class CombinedPanel extends JPanel {
             add(pane);
         }
         
-        private void close() { this.setVisible(false); this.dispose(); updateAll(); }
+        private void close() { this.setVisible(false); this.dispose(); updateStats(); }
     }
 }
