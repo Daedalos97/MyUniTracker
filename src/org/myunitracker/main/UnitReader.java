@@ -17,13 +17,13 @@
 package org.myunitracker.main;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Scanner;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
- *
+ * Class to handle text based input via FileIO 
  * @author Samuel Heath
  */
 public class UnitReader {
@@ -36,6 +36,11 @@ public class UnitReader {
         past_units = new ArrayList(2);
     }
     
+    /**
+     * 
+     * @param grade
+     * @return 
+     */
     public static int getGrade(String grade) {
         int i = Unit.GRADE_N;
         if (grade.equals("HD")) {

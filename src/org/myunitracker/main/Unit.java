@@ -39,6 +39,7 @@ public class Unit {
     private double final_mark;
     private boolean displayOverview = true;
     private boolean isCore;
+    //Use an ENUM you DUM DUM
     public static final int GRADE_HD = 0;
     public static final int GRADE_D = 1;
     public static final int GRADE_CR = 2;
@@ -87,6 +88,10 @@ public class Unit {
     
     public int getGrade() { return this.grade; }
     
+    /**
+     * @param n
+     * @return      Converted a said grade to string.
+     */
     public static String gradeToString(int n) { 
         String g = "N";
         int grad = n;
@@ -106,8 +111,17 @@ public class Unit {
     
     public void setGrade(int i) { this.grade = i; }
     
+    /**
+     * @return The weighted mark for this unit.
+     * e.g. If you have 2 assessments. A1: you get 10/15 and its weighted at 10%
+     * for the unit, and A2: you get 11/20 and its weighted at 5%.
+     * Weighted mark should be 9.42, but your percentage is 62.78%.
+     */
     public double getWeightedMark() { return this.weightedMark; }
     
+    /**
+     * @return  
+     */
     public double getPercentage() { return this.percent; }
     
     /**
@@ -115,10 +129,16 @@ public class Unit {
      */
     public double getWeight() { return this.completed_weight; }
     
+    /**
+     * @return Determines whether or not this unit has a final assessment added or not.
+     */
     public boolean hasFinal() { return this.hasFinal;}
     
     public void setHasFinal(boolean b) { this.hasFinal = b;} 
     
+    /**
+     * @return      If this unit is a final unit
+     */
     public double getFinalMark() { return this.final_mark; }
     
     public void setFinalMark(double mark) { this.final_mark = mark; }
@@ -140,6 +160,13 @@ public class Unit {
     
     public void setCoreUnit(boolean isCoreUnit) { this.isCore = isCoreUnit; }
     
+    /**
+     * Checks whether or not editing an assessment's weighting will put the unit
+     * on a weighting greater than 100, which is normally not allowed.
+     * @param a                 The assessment which already exists.
+     * @param new_weighting     The weighted assessment hoping to be added.
+     * @return                  Whether weighting has breached max.
+     */
     public boolean editHasMaxWeighting(Assessment a, double new_weighting) {
         if ((getWeight()-a.getAssessmentWeight()+new_weighting) <= 100.5) { 
             return true; 
@@ -148,6 +175,12 @@ public class Unit {
         }
     }
     
+    /**
+     * Checks whether or not adding an assessment will put the unit on a weighting
+     * greater than 100, which is normally not allowed.
+     * @param new_weighting     The weighted assessment hoping to be added.
+     * @return                  Whether weighting has breached max.
+     */
     public boolean hasMaxWeighting(double new_weighting) {
         if (new_weighting + getWeight() <= 100.5) {
             return true;
@@ -176,28 +209,42 @@ public class Unit {
         return (double)Math.round(((mark_needed-(getPercentage()*(getWeight()/100.0)))/(exam_weight/100.0))*1000d)/1000d;
     }
     
+    /**
+     * Updates the most important fields of this class.
+     */
+    public void update() {
+        updateWeighting();
+        updateGrade();
+    }
+    
+    /**
+     * Updates the total weighting of this unit.
+     */
     private void updateWeighting() {
         double completedweight = 0.0;
-        double weightedMark = 0.0;
+        double mark_weighted = 0.0;
         double finalExamWeighting = 0.0;
         for (int i = 0; i < getAssessments().size(); i++) {
             if (!assessments.get(i).getAssessmentName().contains("Final Exam")) {
                 completedweight += assessments.get(i).getAssessmentWeight();
-                weightedMark += (assessments.get(i).getPercentage()*assessments.get(i).getAssessmentWeight())/100.0;
+                mark_weighted += (assessments.get(i).getPercentage()*assessments.get(i).getAssessmentWeight())/100.0;
             } else {
                 finalExamWeighting = getAssessments().get(i).getAssessmentWeight();
             }
         }
         if (finalExamWeighting > 0.0) setHasFinal(true);
         if (hasFinal()) {
-            this.percentage = (double)Math.round(((79.6-weightedMark)/(finalExamWeighting/100.0))*1000d)/1000d;
+            this.percentage = (double)Math.round(((79.6-mark_weighted)/(finalExamWeighting/100.0))*1000d)/1000d;
         }
         this.completed_weight = completedweight;
         this.exam_weight = finalExamWeighting;
-        double mark = (weightedMark/completedweight)*100.0;
+        double mark = (mark_weighted/completedweight)*100.0;
         this.percent = (double)Math.round(mark*100d)/100d; 
     }
     
+    /**
+     * Updates the grade the student is currently on for this unit.
+     */
     private void updateGrade() {
         switch ((int) Math.floor(getPercentage()/10.0)) {
             default: this.grade = GRADE_N; break;
@@ -208,13 +255,5 @@ public class Unit {
             case 9: this.grade = GRADE_HD; break;
             case 10: this.grade = GRADE_HD; break;
         }
-    }
-    
-    /**
-     * Updates the fields of this class.
-     */
-    public void update() {
-        updateWeighting();
-        updateGrade();
     }
 }

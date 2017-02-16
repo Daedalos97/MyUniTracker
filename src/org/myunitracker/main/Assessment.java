@@ -16,13 +16,17 @@
 
 package org.myunitracker.main;
 
+/**
+ * Model what an assessment consists of.
+ * @author Samuel James Serwan Heath
+ */
 public class Assessment {
     
-    private String name;
-    private String type; // Assessment type e.g. quiz, exam
-    private double weight;
     private double mark;
     private double outOf;
+    private double weight;
+    private String name;
+    private String type; // Assessment type e.g. quiz, exam
     
     public Assessment(String name, double mark, double outOf, double weight) {
         this.name = name;
@@ -31,17 +35,11 @@ public class Assessment {
         this.outOf = outOf;
     }
     
-    public void setName(String new_name) {
-        this.name = new_name;
-    }
+    public void setName(String new_name) { this.name = new_name; }
     
-    public void setWeight(double new_weight) {
-        this.weight = new_weight;
-    }
+    public void setWeight(double new_weight) { this.weight = new_weight; }
     
-    public void setMark(double mark) {
-        this.mark = mark;
-    }
+    public void setMark(double mark) { this.mark = mark; }
     
     public void setOutOf(double outOf) { this.outOf = outOf; }
     
