@@ -19,11 +19,11 @@ package org.myunitracker.gui;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionListener;
-import javax.swing.BorderFactory;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.Insets;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -32,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+
+//MyUniTracker Imports
 import org.myunitracker.main.Unit;
 import org.myunitracker.main.Assessment;
 import org.myunitracker.main.MyUniTracker;
@@ -43,7 +45,7 @@ import org.myunitracker.main.UnitReader;
 public class FormPanel extends JPanel implements ActionListener {
     
     private Unit unit;
-    private JButton add,edit,remove,finalMarkNeeded;
+    private JButton add,edit,remove,finalMarkNeeded, remove_button;
     private JLabel finalMarkLabel,curGrade,curMark,reqMark;
     private JComboBox finalGradeCB;
     private JComboBox<String> assessmentsCB;
@@ -371,7 +373,7 @@ public class FormPanel extends JPanel implements ActionListener {
         gbcUnit.gridy = 3;
         unitPanel.add(edit_button,gbcUnit);
         
-        JButton remove_button = new JButton("Remove Unit");
+        remove_button = new JButton("Remove Unit");
         remove_button.setFont(fontText);
         remove_button.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
         gbcUnit.gridx = 1;
@@ -389,6 +391,17 @@ public class FormPanel extends JPanel implements ActionListener {
             }
         });
         
+        //Initialise Listeners
+        initialiseListeners();
+        
+        this.setBackground(Color.red);
+        setVisible(true);
+    }
+    
+    /**
+     * Initialise Listers for buttons with no dependant variables.
+     */
+    private void initialiseListeners() {
         remove_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -397,9 +410,6 @@ public class FormPanel extends JPanel implements ActionListener {
                 updatePanes();
             }
         });
-        
-        this.setBackground(Color.red);
-        setVisible(true);
     }
     
     /**
@@ -418,7 +428,7 @@ public class FormPanel extends JPanel implements ActionListener {
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             setSize(275,175);
             setLocationRelativeTo(null);
-            initialise(a);
+            initialiseDialog(a);
         }
         
         public Dialog() {
@@ -426,10 +436,10 @@ public class FormPanel extends JPanel implements ActionListener {
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             setSize(275,175);
             setLocationRelativeTo(null);
-            initialise(null);
+            initialiseDialog(null);
         }
         
-        private void initialise(Assessment a) {
+        private void initialiseDialog(Assessment a) {
             JPanel p = new JPanel();
             p.setBackground(Color.WHITE);
             p.setLayout(new GridBagLayout());

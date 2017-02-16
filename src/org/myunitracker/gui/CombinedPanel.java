@@ -66,7 +66,7 @@ int anchor,int fill,Insets insets,int ipadx,int ipady
 public class CombinedPanel extends JPanel {
     
     private ArrayList<XYChart.Series> data;
-    private JButton removePast_result, editPast_result;
+    private JButton removePast_result, editPast_result, addPast_result;
     private JComboBox past_unitsCB;
     private JLabel cur_wam,expect_wam,core_wam,cur_gpa,expect_gpa,core_expectwam;
     private JPanel checkBoxPanel;
@@ -74,6 +74,7 @@ public class CombinedPanel extends JPanel {
     private Font fontTitle = MyUniTrackerGUI.FONT_TITLE, fontSubTitle = MyUniTrackerGUI.fontSubTitle, fontText = MyUniTrackerGUI.fontText;
     private LineChart<String,Number> lineChart;
     private Map<JCheckBox,String> checkMap;
+    
     //All the colours the FXGraph uses.
     private final String[] colour = new String[] {"#f3622d","#fba71b","#57b757","#44aaca","#4258c9","#9a42c8","#c84164","#888888"};
     
@@ -92,7 +93,7 @@ public class CombinedPanel extends JPanel {
             @Override
             public void run() {
                 JPanel combinedGraphPanel = new JPanel();
-                combinedGraphPanel.setBackground(Color.decode("#eeeeee")); //Color.decode("#e0e0e0")
+                combinedGraphPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01); //Color.decode("#e0e0e0")
                 combinedGraphPanel.setLayout(new GridBagLayout());
 
                 GridBagConstraints gbc = new GridBagConstraints();
@@ -140,7 +141,7 @@ public class CombinedPanel extends JPanel {
                 gbc.gridheight = 4;
                 gbc.gridx = 1;
                 gbc.gridy = 0;
-                fxPanel.setBackground(Color.decode("#eeeeee"));
+                fxPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 graphPanel.add(fxPanel);
                 combinedGraphPanel.add(graphPanel,gbc);
                 Platform.runLater(new Runnable() {
@@ -337,7 +338,24 @@ public class CombinedPanel extends JPanel {
                 gbcUnit.gridx = 0;
                 gbcUnit.gridy = 3;
                 unitPanel.add(add_button,gbcUnit);
-
+                
+                //Listener
+                add_button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent event) {
+                        if (!unit_name.getText().equals("Unit Code") && !credit_points.getText().equals("Credit Points")) {
+                            Unit u = new Unit(unit_name.getText(), Double.parseDouble(credit_points.getText()));
+                            u.setCoreUnit(core_unitCheck.isSelected());
+                            MyUniTracker.units.add(u);
+                            UnitsPanel up = new org.myunitracker.gui.UnitsPanel(u);
+                            up.setVisible(true);
+                            tab.insertTab(u.getUnitName(),null,up,null,tab.getTabCount()-1);
+                            updateAll();
+                            unit_name.setText("Unit Code");
+                        }
+                    }
+                });
+                
                 gbcUnit.gridwidth = 1;
 
                 /*
@@ -355,15 +373,15 @@ public class CombinedPanel extends JPanel {
                 pastPanel.add(past_resultLabel,gbcPast);
                 gbcPast.anchor = GridBagConstraints.CENTER;
 
-                JButton addPastResult = new JButton("Add Results");
-                addPastResult.setFont(fontText);
-                addPastResult.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-                addPastResult.setToolTipText("Click to add previous results");
+                addPast_result = new JButton("Add Results");
+                addPast_result.setFont(fontText);
+                addPast_result.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+                addPast_result.setToolTipText("Click to add previous results");
                 gbcPast.fill = GridBagConstraints.HORIZONTAL;
                 gbcPast.anchor = GridBagConstraints.WEST;
                 gbcPast.gridx = 1;
                 gbcPast.gridy = 1;
-                pastPanel.add(addPastResult,gbcPast);
+                pastPanel.add(addPast_result,gbcPast);
                 gbcPast.fill = GridBagConstraints.NONE;
 
                 String[] past_unit_data = new String[MyUniTracker.past_results.size()];
@@ -414,56 +432,6 @@ public class CombinedPanel extends JPanel {
                 gbcPast.gridy = 2;
                 pastPanel.add(past_unitsCB,gbcPast);
 
-                add_button.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent event) {
-                        if (!unit_name.getText().equals("Unit Code") && !credit_points.getText().equals("Credit Points")) {
-                            Unit u = new Unit(unit_name.getText(), Double.parseDouble(credit_points.getText()));
-                            u.setCoreUnit(core_unitCheck.isSelected());
-                            MyUniTracker.units.add(u);
-                            UnitsPanel up = new org.myunitracker.gui.UnitsPanel(u);
-                            up.setVisible(true);
-                            tab.insertTab(u.getUnitName(),null,up,null,tab.getTabCount()-1);
-                            updateAll();
-                            unit_name.setText("Unit Code");
-                        }
-                    }
-                });
-
-                addPastResult.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent event) { 
-                        Dialog addPast = new Dialog(null);
-                    }
-                });
-
-                editPast_result.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent event) { 
-                        Dialog editPast = new Dialog(MyUniTracker.findResult((String)past_unitsCB.getSelectedItem()));
-                    }
-                });
-
-                removePast_result.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent event) {
-                        MyUniTracker.past_results.remove(MyUniTracker.findResult((String)past_unitsCB.getSelectedItem()));
-                        past_unitsCB.removeAllItems();
-                        for (Unit u : MyUniTracker.past_results) 
-                            past_unitsCB.addItem(u.getUnitName());
-                        if (past_unitsCB.getItemCount() == 0) {
-                            removePast_result.setEnabled(false);
-                            editPast_result.setEnabled(false);
-                            past_unitsCB.setEnabled(false);
-                        } else {
-                            editPast_result.setEnabled(true);
-                            editPast_result.setEnabled(true);
-                            past_unitsCB.setEnabled(true);
-                        }
-                        updateAll();
-                    }
-                });
-
                 iscurtin_student.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -474,15 +442,52 @@ public class CombinedPanel extends JPanel {
                 });
 
                 /*
-                 Check Box Panel Initialisation
-                */
+                 * Check Box Panel and Listener Init.
+                 */
                 updateAll();
-
-
-
-               add(combinedGraphPanel);
-
+                addListeners();
+                
+                add(combinedGraphPanel);
                 setVisible(true);
+            }
+        });
+    }
+    
+    /**
+     * Adds listeners to buttons which don't rely on other variables.
+     */
+    private void addListeners() {
+        addPast_result.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) { 
+                Dialog addPast = new Dialog(null);
+            }
+        });
+
+        editPast_result.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) { 
+                Dialog editPast = new Dialog(MyUniTracker.findResult((String)past_unitsCB.getSelectedItem()));
+            }
+        });
+
+        removePast_result.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                MyUniTracker.past_results.remove(MyUniTracker.findResult((String)past_unitsCB.getSelectedItem()));
+                past_unitsCB.removeAllItems();
+                for (Unit u : MyUniTracker.past_results) 
+                    past_unitsCB.addItem(u.getUnitName());
+                if (past_unitsCB.getItemCount() == 0) {
+                    removePast_result.setEnabled(false);
+                    editPast_result.setEnabled(false);
+                    past_unitsCB.setEnabled(false);
+                } else {
+                    editPast_result.setEnabled(true);
+                    editPast_result.setEnabled(true);
+                    past_unitsCB.setEnabled(true);
+                }
+                updateAll();
             }
         });
     }
@@ -601,7 +606,7 @@ public class CombinedPanel extends JPanel {
             this.result = res;
             setSize(250,230);
             setLocationRelativeTo(null);
-            initialise();
+            initialiseDialog();
             setVisible(true);
         }
         
@@ -617,7 +622,7 @@ public class CombinedPanel extends JPanel {
             }
         }
         
-        private void initialise() {
+        private void initialiseDialog() {
             JPanel pane = new JPanel();
             pane.setLayout(new GridBagLayout());
             pane.setBackground(Color.WHITE);
