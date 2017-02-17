@@ -116,7 +116,7 @@ public class MyUniTrackerGUI extends JFrame {
             tab.removeTabAt(i);
         for (int i = 0; i < MyUniTracker.units.size(); i++) {
             UnitsPanel up = new UnitsPanel(MyUniTracker.units.get(i));
-            tab.addTab(MyUniTracker.units.get(i).getUnitName(),up);
+            tab.addTab("<html><p style='padding:4px;'>"+MyUniTracker.units.get(i).getUnitName()+"</p></html>",up);
         }
         
         CP = new CombinedPanel();

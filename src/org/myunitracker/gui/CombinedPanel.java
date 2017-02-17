@@ -147,6 +147,8 @@ public class CombinedPanel extends JPanel {
                 combinedGraphPanel.add(checkBoxPanel,gbc);
                 
                 final JFXPanel fxPanel = new JFXPanel();
+                JPanel innerPanel = new JPanel(new BorderLayout());
+                innerPanel.add(fxPanel);
                 JPanel graphPanel = new JPanel(new GridBagLayout());
                 gbc.insets = new Insets(10,5,10,10);
                 gbc.fill = GridBagConstraints.BOTH;
@@ -156,7 +158,7 @@ public class CombinedPanel extends JPanel {
                 gbc.weighty = 1.0;
                 gbc.weightx = 0.9;
                 fxPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-                graphPanel.add(fxPanel);
+                graphPanel.add(innerPanel);
                 combinedGraphPanel.add(graphPanel,gbc);
                 
                 Platform.runLater(new Runnable() {
@@ -518,7 +520,7 @@ public class CombinedPanel extends JPanel {
     private Scene createScene() {
         data = new ArrayList(1);
         Stage s = new Stage();
-        s.setTitle("Unit Progress");
+        s.setTitle("Semester Progress");
         //defining the axes
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
@@ -547,6 +549,7 @@ public class CombinedPanel extends JPanel {
         AnchorPane.setBottomAnchor(lineChart, 0.0);
         AnchorPane.setLeftAnchor(lineChart, 0.0);
         AnchorPane.setRightAnchor(lineChart, 0.0);
+        
         anchorPane.getChildren().add(lineChart);
         
         Scene scene = new Scene(anchorPane);
