@@ -16,6 +16,8 @@
 
 package org.myunitracker.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -27,6 +29,9 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.layout.AnchorPane;
 
 //MyUniTracker Imports
 import org.myunitracker.main.Assessment;
@@ -44,6 +49,8 @@ public class GraphPanel extends JPanel {
     
     public GraphPanel(Unit u) {
         setVisible(true);
+        this.setLayout(new BorderLayout());
+        
         final JFXPanel fxPanel = new JFXPanel();
         this.unit = u;
         add(fxPanel);
@@ -84,7 +91,16 @@ public class GraphPanel extends JPanel {
             if (!a.getAssessmentName().equals("Final Exam")) 
             series.getData().add(new XYChart.Data(a.getAssessmentName(),(a.getPercentage())));
         }
-        Scene scene = new Scene(lineChart,676,669);
+        AnchorPane anchorPane = new AnchorPane();
+        
+        AnchorPane.setTopAnchor(lineChart, 0.0);
+        AnchorPane.setBottomAnchor(lineChart, 0.0);
+        AnchorPane.setLeftAnchor(lineChart, 0.0);
+        AnchorPane.setRightAnchor(lineChart, 0.0);
+        anchorPane.getChildren().add(lineChart);
+        
+        Scene scene = new Scene(anchorPane);
+        
         lineChart.setLegendVisible(false);
         lineChart.getData().add(series);
         Platform.setImplicitExit(false);

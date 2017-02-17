@@ -16,6 +16,7 @@
 
 package org.myunitracker.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -48,6 +49,7 @@ import javafx.scene.chart.XYChart;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.layout.AnchorPane;
 
 
 //MyUniTracker Imports
@@ -79,9 +81,9 @@ public class CombinedPanel extends JPanel {
     private final String[] colour = new String[] {"#f3622d","#fba71b","#57b757","#44aaca","#4258c9","#9a42c8","#c84164","#888888"};
     
     public CombinedPanel() {
-        this.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR);
         tab = MyUniTrackerGUI.getTabbedPane();
-        
+        this.setLayout(new BorderLayout());
+        this.setBorder(BorderFactory.createLineBorder(MyUniTrackerGUI.BACKGROUND_COLOUR, 5));
         initialisePanel();
         
         tab.setSelectedIndex(tab.getTabCount()-1);
@@ -93,10 +95,11 @@ public class CombinedPanel extends JPanel {
             @Override
             public void run() {
                 JPanel combinedGraphPanel = new JPanel();
-                combinedGraphPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01); //Color.decode("#e0e0e0")
+                combinedGraphPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 combinedGraphPanel.setLayout(new GridBagLayout());
 
                 GridBagConstraints gbc = new GridBagConstraints();
+                gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.insets = new Insets(10,10,5,5);
 
                 JPanel statsPanel = new JPanel(new GridBagLayout());
@@ -106,6 +109,8 @@ public class CombinedPanel extends JPanel {
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.gridx = 0;
                 gbc.gridy = 0;
+                gbc.weighty = 0;
+                gbc.weightx = 0.1;
                 combinedGraphPanel.add(statsPanel,gbc);
 
                 JPanel unitPanel = new JPanel(new GridBagLayout());
@@ -115,6 +120,8 @@ public class CombinedPanel extends JPanel {
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.gridx = 0;
                 gbc.gridy = 1;
+                gbc.weighty = 0;
+                gbc.weightx = 0.1;
                 combinedGraphPanel.add(unitPanel,gbc);
 
                 JPanel pastPanel = new JPanel(new GridBagLayout());
@@ -125,6 +132,8 @@ public class CombinedPanel extends JPanel {
                 gbc.anchor = GridBagConstraints.NORTH;
                 gbc.gridx = 0;
                 gbc.gridy = 2;
+                gbc.weighty = 0;
+                gbc.weightx = 0.1;
                 combinedGraphPanel.add(pastPanel,gbc);
                 
                 checkBoxPanel = new JPanel(new GridBagLayout());
@@ -133,17 +142,23 @@ public class CombinedPanel extends JPanel {
                 ((javax.swing.border.TitledBorder) checkBoxPanel.getBorder()).setTitleFont(fontTitle);
                 gbc.gridx = 0;
                 gbc.gridy = 3;
+                gbc.weighty = 0;
+                gbc.weightx = 0.1;
                 combinedGraphPanel.add(checkBoxPanel,gbc);
                 
                 final JFXPanel fxPanel = new JFXPanel();
                 JPanel graphPanel = new JPanel(new GridBagLayout());
                 gbc.insets = new Insets(10,5,10,10);
+                gbc.fill = GridBagConstraints.BOTH;
                 gbc.gridheight = 4;
                 gbc.gridx = 1;
                 gbc.gridy = 0;
+                gbc.weighty = 1.0;
+                gbc.weightx = 0.9;
                 fxPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 graphPanel.add(fxPanel);
                 combinedGraphPanel.add(graphPanel,gbc);
+                
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
                         fxPanel.setScene(createScene());
@@ -525,7 +540,17 @@ public class CombinedPanel extends JPanel {
             data.add(series);
             lineChart.getData().add(series);
         }
-        Scene scene = new Scene(lineChart,689,669);
+        
+        AnchorPane anchorPane = new AnchorPane();
+        
+        AnchorPane.setTopAnchor(lineChart, 0.0);
+        AnchorPane.setBottomAnchor(lineChart, 0.0);
+        AnchorPane.setLeftAnchor(lineChart, 0.0);
+        AnchorPane.setRightAnchor(lineChart, 0.0);
+        anchorPane.getChildren().add(lineChart);
+        
+        Scene scene = new Scene(anchorPane);
+       
         Platform.setImplicitExit(false);
         return scene;
     }

@@ -17,6 +17,8 @@
 package org.myunitracker.main;
 
 //Java Lang Imports
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.*;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
@@ -118,12 +120,14 @@ public class MyUniTracker {
         }
         for (int i = 0; i < units.size(); i++) {
             double cred = units.get(i).getCreditPoints();
-            switch (units.get(i).getGrade()) {
-                case 0: total_sum += cred*grade_ptsUWA[0]; total_credit += cred; break;
-                case 1: total_sum += cred*grade_ptsUWA[1]; total_credit += cred; break;
-                case 2: total_sum += cred*grade_ptsUWA[2]; total_credit += cred; break;
-                case 3: total_sum += cred*grade_ptsUWA[3]; total_credit += cred; break;
-                default: total_sum += 0.0; total_credit += cred; break;
+            if (units.get(i).getPercentage() != 0) {
+                switch (units.get(i).getGrade()) {
+                    case 0: total_sum += cred*grade_ptsUWA[0]; total_credit += cred; break;
+                    case 1: total_sum += cred*grade_ptsUWA[1]; total_credit += cred; break;
+                    case 2: total_sum += cred*grade_ptsUWA[2]; total_credit += cred; break;
+                    case 3: total_sum += cred*grade_ptsUWA[3]; total_credit += cred; break;
+                    default: total_sum += 0.0; total_credit += cred; break;
+                }
             }
         }
         
@@ -183,12 +187,16 @@ public class MyUniTracker {
         for (int i = 0; i < units.size(); i++) {
             if (majorWAM) {
                 if (units.get(i).isCoreUnit()) {
+                    if (units.get(i).getPercentage() != 0) {
+                        sum += units.get(i).getPercentage()*units.get(i).getCreditPoints();
+                        credit += units.get(i).getCreditPoints();
+                    }
+                }
+            } else {
+                if (units.get(i).getPercentage() != 0) {
                     sum += units.get(i).getPercentage()*units.get(i).getCreditPoints();
                     credit += units.get(i).getCreditPoints();
                 }
-            } else {
-                sum += units.get(i).getPercentage()*units.get(i).getCreditPoints();
-                credit += units.get(i).getCreditPoints();
             }
         }
         return (double)Math.round(sum/credit*1000d)/1000d;
@@ -277,7 +285,8 @@ public class MyUniTracker {
             e.printStackTrace();
         }
         window.setVisible(false);
-        MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",1000,767);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",screenSize.width,screenSize.height);
         MUT.getTabbedPane().setSelectedIndex(MUT.getTabbedPane().getTabCount()-1);
         System.out.println(System.currentTimeMillis() - time);
     }

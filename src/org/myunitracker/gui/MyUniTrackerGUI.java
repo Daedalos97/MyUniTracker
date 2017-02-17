@@ -16,9 +16,12 @@
 
 package org.myunitracker.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 
 import javax.swing.ImageIcon;
@@ -61,17 +64,12 @@ public class MyUniTrackerGUI extends JFrame {
         
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLookFeel();
-        if (System.getProperty("os.name").startsWith("Mac")) {
-            this.setSize(WIDTH+17,HEIGHT);
-        } else {
-            this.setSize(WIDTH, HEIGHT);
-        }
+        setSize(WIDTH, HEIGHT-100);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setLocationRelativeTo(null);
         
         //Add Icons
         initialiseIcons();
-        
-        tab = new JTabbedPane();
         
         this.addWindowListener(new WindowAdapter(){
             @Override
@@ -81,10 +79,13 @@ public class MyUniTrackerGUI extends JFrame {
         }
         );
         
+        tab = new JTabbedPane();
+        this.setLayout(new BorderLayout());
+        this.add(tab, BorderLayout.CENTER);
+        
         //Sets up the tabs on the tabbed pane.
         initialiseTabs();
         
-        this.add(tab);
         this.setResizable(true);
         this.setVisible(true);
     }
@@ -117,6 +118,7 @@ public class MyUniTrackerGUI extends JFrame {
             UnitsPanel up = new UnitsPanel(MyUniTracker.units.get(i));
             tab.addTab(MyUniTracker.units.get(i).getUnitName(),up);
         }
+        
         CP = new CombinedPanel();
         tab.add("Overview",CP);
         

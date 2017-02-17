@@ -16,6 +16,7 @@
 
 package org.myunitracker.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionListener;
@@ -54,8 +55,9 @@ public class FormPanel extends JPanel implements ActionListener {
     private Font fontTitle = MyUniTrackerGUI.FONT_TITLE, fontSubTitle = MyUniTrackerGUI.fontSubTitle, fontText = MyUniTrackerGUI.fontText;
     
     public FormPanel(Unit u, GraphPanel graphPane) {
-        this.setLayout(new GridBagLayout());
+       
         tab = MyUniTrackerGUI.getTabbedPane();
+        this.setLayout(new BorderLayout());
         
         /*
         Initialise variables
@@ -78,9 +80,12 @@ public class FormPanel extends JPanel implements ActionListener {
          * Layout Setup
          */
         
+        JPanel basePanel = new JPanel();
+        basePanel.setLayout(new GridBagLayout());
+        
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10,5,5,5);
-        gbc.fill = GridBagConstraints.BOTH;
         
         JPanel assessPanel = new JPanel();
         assessPanel.setBackground(Color.WHITE);
@@ -90,7 +95,9 @@ public class FormPanel extends JPanel implements ActionListener {
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        this.add(assessPanel,gbc);
+        gbc.weighty = 0;
+        gbc.weightx = 1.0;
+        basePanel.add(assessPanel,gbc);
         
         JPanel statsPanel = new JPanel();
         statsPanel.setBackground(Color.WHITE);
@@ -99,8 +106,9 @@ public class FormPanel extends JPanel implements ActionListener {
         ((javax.swing.border.TitledBorder) statsPanel.getBorder()).setTitleFont(fontTitle);
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        this.add(statsPanel,gbc);
+        gbc.weighty = 0;
+        gbc.weightx = 1.0;
+        basePanel.add(statsPanel,gbc);
         
         JPanel unitPanel = new JPanel();
         unitPanel.setBackground(Color.WHITE);
@@ -109,8 +117,10 @@ public class FormPanel extends JPanel implements ActionListener {
         ((javax.swing.border.TitledBorder) unitPanel.getBorder()).setTitleFont(fontTitle);
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        this.add(unitPanel,gbc);
+        gbc.weighty = 0;
+        gbc.weightx = 1.0;
+        basePanel.add(unitPanel,gbc);
+        
         
         /*
          *Assessments Panel 
@@ -122,13 +132,11 @@ public class FormPanel extends JPanel implements ActionListener {
         add.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
         add.setToolTipText("Click to add an assessment to the unit");
         add.setFont(fontText);
-        
         gbcAssess.insets = new Insets(3,3,3,3);
         gbcAssess.gridwidth = 2;
         gbcAssess.gridx = 0;
         gbcAssess.gridy = 2;
         assessPanel.add(add,gbcAssess);
-        gbcAssess.fill = GridBagConstraints.NONE;
         gbcAssess.gridwidth = 1;
         
         edit = new JButton("Edit Assess");
@@ -255,7 +263,6 @@ public class FormPanel extends JPanel implements ActionListener {
             gbcStats.gridy = 2;
             statsPanel.add(reqMark,gbcStats);
         }
-        gbcStats.fill = GridBagConstraints.NONE;
         
         finalMarkNeeded = new JButton("% needed in exam");
         finalMarkNeeded.setFont(fontText);
@@ -266,7 +273,6 @@ public class FormPanel extends JPanel implements ActionListener {
         statsPanel.add(finalMarkNeeded, gbcStats);
         gbcStats.gridwidth = 1;
         
-        gbcStats.fill = GridBagConstraints.NONE;
         
         JLabel gradeLabel = new JLabel("Current Grade:");
         gradeLabel.setFont(fontText);
@@ -335,7 +341,6 @@ public class FormPanel extends JPanel implements ActionListener {
         gbcUnit.gridx = 1;
         gbcUnit.gridy = 0;
         unitPanel.add(unit_name,gbcUnit);
-        gbcUnit.fill = GridBagConstraints.NONE;
 
         JLabel credit_pts = new JLabel("No. Credit Points:");
         credit_pts.setFont(fontText);
@@ -351,7 +356,6 @@ public class FormPanel extends JPanel implements ActionListener {
         gbcUnit.gridx = 1;
         gbcUnit.gridy = 1;
         unitPanel.add(credit_points,gbcUnit);
-        gbcUnit.fill = GridBagConstraints.NONE;
         
         JLabel core_unit = new JLabel("Is core unit:");
         core_unit.setFont(fontText);
@@ -393,6 +397,8 @@ public class FormPanel extends JPanel implements ActionListener {
         
         //Initialise Listeners
         initialiseListeners();
+        
+        this.add(basePanel);
         
         this.setBackground(Color.red);
         setVisible(true);
