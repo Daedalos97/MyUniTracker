@@ -159,7 +159,7 @@ pre {
 
 table {
   width: 360px;
-  margin-left: -40px;
+  margin-left: 0px;
   border-collapse:collapse;
   border-bottom: 2px solid #e5e5e5;
   padding-bottom: 10px;
@@ -201,11 +201,11 @@ header ul {
   list-style:none;
   height:40px;
   padding:0; 
-  margin-left: -45px;
+  margin-left: 0px;
   background: #f4f4f4;
   border-radius:5px;
   border:1px solid #e0e0e0;
-  width:360px;
+  width:270px;
 }
 
 header li {
@@ -278,7 +278,7 @@ footer {
   width:360px;
   float:left;
   position:fixed;
-  bottom:50px;
+  bottom:20px;
   -webkit-font-smoothing:subpixel-antialiased;
 }
 
