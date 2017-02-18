@@ -133,13 +133,13 @@ public class MyUniTracker {
         
         double result = (double)Math.round(total_sum/(double)total_credit*1000d)/1000d;
         
-        if (!isCurtin()) {
+         if (!isCurtin()) {
             return result;
         } else {
-            if (result < 0.0) {
-                return 0.0;
+            if (result == 0.0) {
+                return result;
             } else {
-                return (double)Math.round(total_sum/(double)total_credit*1000d)/1000d;
+                return result-3.0;
             }
         }
     }
@@ -205,12 +205,20 @@ public class MyUniTracker {
     /**
      * @return The units for this student.
      */
-    public ArrayList<Unit> getUnits() { return this.units; }
+    public ArrayList<Unit> getUnits() { return units; }
     
     /**
      * @return The past past_results of this student.
      */
-    public ArrayList<Unit> getGrades() { return this.past_results; }
+    public static ArrayList<Unit> getGrades() { return past_results; }
+    
+    public static Unit findPastUnit(String unit_name) {
+        for (Unit u : getGrades()) {
+            if (u.getUnitName().equals(unit_name)) return u;
+        }
+        
+        return null;
+    }
     
     public static int getCurrentUnitCount() {
         return units.size();

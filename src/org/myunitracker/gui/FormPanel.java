@@ -443,7 +443,7 @@ public class FormPanel extends JPanel implements ActionListener {
         public Dialog() {
             super("Add Assessment");
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            setSize(275,175);
+            setSize(330,250);
             setLocationRelativeTo(null);
             initialiseDialog(null);
         }
@@ -489,9 +489,11 @@ public class FormPanel extends JPanel implements ActionListener {
             c.fill = GridBagConstraints.HORIZONTAL;
             c.gridwidth = 2;
             c.gridx = 1;
-            c.gridy = 4;
+            c.gridy = 5;
             p.add(submit,c);
                     
+            final JLabel error_message;
+            
             if (a == null) {
                 edit_assessname = new JTextField("Assessment");
                 edit_assessname.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
@@ -513,33 +515,56 @@ public class FormPanel extends JPanel implements ActionListener {
                 c.gridx = 1;
                 c.gridy = 3;
                 p.add(edit_weight,c);
+                error_message = new JLabel("");
+                c.gridx = 0;
+                c.gridy = 4;
+                c.gridwidth = 3;
+                p.add(error_message, c);
                 submit.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
-                        if (unit.hasMaxWeighting(Double.parseDouble(edit_weight.getText())) && !edit_weight.getText().equals("Too high a weight")) {
-                            unit.addAssessment(new Assessment(edit_assessname.getText(), Double.parseDouble(edit_mark.getText()), Double.parseDouble(edit_outOf.getText()), Double.parseDouble(edit_weight.getText())));
-                            close();
-                            assessmentsCB.removeAllItems();
-                            for (Assessment a : unit.getAssessments())
-                                assessmentsCB.addItem(a.getAssessmentName());
-                            if (assessmentsCB.getItemCount() == 0) {
-                                remove.setEnabled(false);
-                                edit.setEnabled(false);
-                                assessmentsCB.setEnabled(false);
-                            } else {
-                                remove.setEnabled(true);
-                                edit.setEnabled(true);
-                                assessmentsCB.setEnabled(true);
-                                assessmentsCB.setSelectedIndex(assessmentsCB.getItemCount()-1);
+                        try {
+                            String assessmentName = edit_assessname.getText();
+                            if (assessmentName.isEmpty() || assessmentName.equals("Enter valid name") || unit.findAssessment(assessmentName) != null ) {
+                                throw new IllegalArgumentException();
                             }
-                            unit.update();
-                            curGrade.setText(unit.gradeToString(unit.getGrade()));
-                            curMark.setText(String.valueOf(unit.getPercentage()));
-                            finalMarkNeeded.doClick();
-                            updatePanes();
-                        } else {
-                            edit_weight.setForeground(Color.red);
-                            edit_weight.setText("Too high a weight");
+                            Double mark = Double.parseDouble(edit_mark.getText());
+                            Double outOf = Double.parseDouble(edit_outOf.getText());
+                            Double weight = Double.parseDouble(edit_weight.getText());
+                            
+                            if (unit.hasMaxWeighting(Double.parseDouble(edit_weight.getText())) && !edit_weight.getText().equals("Too high a weight")) {
+
+                                unit.addAssessment(new Assessment(assessmentName, mark, outOf, weight));
+                                close();
+
+                                assessmentsCB.removeAllItems();
+                                for (Assessment a : unit.getAssessments())
+                                    assessmentsCB.addItem(a.getAssessmentName());
+                                if (assessmentsCB.getItemCount() == 0) {
+                                    remove.setEnabled(false);
+                                    edit.setEnabled(false);
+                                    assessmentsCB.setEnabled(false);
+                                } else {
+                                    remove.setEnabled(true);
+                                    edit.setEnabled(true);
+                                    assessmentsCB.setEnabled(true);
+                                    assessmentsCB.setSelectedIndex(assessmentsCB.getItemCount()-1);
+                                }
+                                unit.update();
+                                curGrade.setText(unit.gradeToString(unit.getGrade()));
+                                curMark.setText(String.valueOf(unit.getPercentage()));
+                                finalMarkNeeded.doClick();
+                                updatePanes();
+                            } else {
+                                edit_weight.setForeground(Color.red);
+                                edit_weight.setText("Too high a weight");
+                            }
+                        } catch (NumberFormatException e) {
+                            error_message.setForeground(Color.red);
+                            error_message.setText("Check you entered valid numbers");
+                        } catch (IllegalArgumentException IAE) {
+                            edit_assessname.setForeground(Color.red);
+                            edit_assessname.setText("Enter valid name");
                         }
                     }
                 });
@@ -564,36 +589,61 @@ public class FormPanel extends JPanel implements ActionListener {
                 c.gridx = 1;
                 c.gridy = 3;
                 p.add(edit_weight,c);
+                error_message = new JLabel("");
+                c.gridx = 0;
+                c.gridy = 4;
+                c.gridwidth = 3;
+                p.add(error_message, c);
                 submit.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent event) {
-                        if (unit.editHasMaxWeighting(ass,Double.parseDouble(edit_weight.getText())) && !edit_weight.getText().equals("Too high a weight")) {
-                            ass.setName(edit_assessname.getText());
-                            ass.setMark(Double.parseDouble(edit_mark.getText()));
-                            ass.setOutOf(Double.parseDouble(edit_outOf.getText()));
-                            ass.setWeight(Double.parseDouble(edit_weight.getText()));
-                            close();
-                            assessmentsCB.removeAllItems();
-                            for (Assessment a : unit.getAssessments())
-                                assessmentsCB.addItem(a.getAssessmentName());
-                            if (assessmentsCB.getItemCount() == 0) {
-                                remove.setEnabled(false);
-                                edit.setEnabled(false);
-                                assessmentsCB.setEnabled(false);
-                            } else {
-                                remove.setEnabled(true);
-                                edit.setEnabled(true);
-                                assessmentsCB.setEnabled(true);
-                                assessmentsCB.setSelectedItem(ass.getAssessmentName());
+                        try {
+                            String assessmentName = edit_assessname.getText();
+                            if (assessmentName.isEmpty() || assessmentName.equals("Enter valid name") || unit.findAssessment(assessmentName) != ass) {
+                                throw new IllegalArgumentException();
                             }
-                            unit.update();
-                            curGrade.setText(unit.gradeToString(unit.getGrade()));
-                            curMark.setText(String.valueOf(unit.getPercentage()));
-                            finalMarkNeeded.doClick();
-                            updatePanes();
-                        } else {
-                            edit_weight.setForeground(Color.red);
-                            edit_weight.setText("Too high a weight");
+                            Double mark = Double.parseDouble(edit_mark.getText());
+                            Double outOf = Double.parseDouble(edit_outOf.getText());
+                            Double weight = Double.parseDouble(edit_weight.getText());
+                            
+                            if (unit.editHasMaxWeighting(ass,Double.parseDouble(edit_weight.getText())) && !edit_weight.getText().equals("Too high a weight")) {
+                                
+                                ass.setName(assessmentName);
+                                ass.setMark(mark);
+                                ass.setOutOf(outOf);
+                                ass.setWeight(weight);
+                                
+                                close();
+                                
+                                assessmentsCB.removeAllItems();
+                                for (Assessment a : unit.getAssessments())
+                                    assessmentsCB.addItem(a.getAssessmentName());
+                                if (assessmentsCB.getItemCount() == 0) {
+                                    remove.setEnabled(false);
+                                    edit.setEnabled(false);
+                                    assessmentsCB.setEnabled(false);
+                                } else {
+                                    remove.setEnabled(true);
+                                    edit.setEnabled(true);
+                                    assessmentsCB.setEnabled(true);
+                                    assessmentsCB.setSelectedItem(ass.getAssessmentName());
+                                }
+                                unit.update();
+                                curGrade.setText(unit.gradeToString(unit.getGrade()));
+                                curMark.setText(String.valueOf(unit.getPercentage()));
+                                finalMarkNeeded.doClick();
+                                updatePanes();
+                            } else {
+                                edit_weight.setForeground(Color.red);
+                                edit_weight.setText("Too high a weight");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("ERROR");
+                            error_message.setForeground(Color.red);
+                            error_message.setText("Check you entered valid numbers");
+                        } catch (IllegalArgumentException IAE) {
+                            edit_assessname.setForeground(Color.red);
+                            edit_assessname.setText("Enter valid name");
                         }
                     }
                 });
