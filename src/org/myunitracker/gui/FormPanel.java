@@ -163,7 +163,9 @@ public class FormPanel extends JPanel implements ActionListener {
         
         assessmentsCB = new JComboBox(item);
         assessmentsCB.setFont(fontText);
-        assessmentsCB.setSelectedIndex(0);
+        if (assessmentsCB.getItemCount() >= 2) {
+            assessmentsCB.setSelectedItem(unit.getAssessments().get(unit.getAssessments().size()-1));
+        }
         assessmentsCB.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
         assessmentsCB.setToolTipText("Selected assessment");
         gbcAssess.fill = GridBagConstraints.HORIZONTAL;
@@ -208,6 +210,7 @@ public class FormPanel extends JPanel implements ActionListener {
                 } else {
                     remove.setEnabled(true);
                     edit.setEnabled(true);
+                    assessmentsCB.setSelectedIndex(assessmentsCB.getItemCount()-1);
                     assessmentsCB.setEnabled(true);
                 }
                 unit.update();
@@ -527,6 +530,7 @@ public class FormPanel extends JPanel implements ActionListener {
                                 remove.setEnabled(true);
                                 edit.setEnabled(true);
                                 assessmentsCB.setEnabled(true);
+                                assessmentsCB.setSelectedIndex(assessmentsCB.getItemCount()-1);
                             }
                             unit.update();
                             curGrade.setText(unit.gradeToString(unit.getGrade()));
@@ -580,6 +584,7 @@ public class FormPanel extends JPanel implements ActionListener {
                                 remove.setEnabled(true);
                                 edit.setEnabled(true);
                                 assessmentsCB.setEnabled(true);
+                                assessmentsCB.setSelectedItem(ass.getAssessmentName());
                             }
                             unit.update();
                             curGrade.setText(unit.gradeToString(unit.getGrade()));
