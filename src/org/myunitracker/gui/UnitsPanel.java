@@ -41,7 +41,7 @@ public class UnitsPanel extends JPanel {
         
         GraphPanel gp = new GraphPanel(unit);
         gp.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-        gbc.insets = new Insets(5,0,5,5);
+        gbc.insets = new Insets(10,0,10,10);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridheight = 2;
         gbc.gridx = 1;

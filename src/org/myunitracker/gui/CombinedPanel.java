@@ -147,19 +147,16 @@ public class CombinedPanel extends JPanel {
                 combinedGraphPanel.add(checkBoxPanel,gbc);
                 
                 final JFXPanel fxPanel = new JFXPanel();
-                JPanel innerPanel = new JPanel(new BorderLayout());
-                innerPanel.add(fxPanel);
-                JPanel graphPanel = new JPanel(new GridBagLayout());
+                fxPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+                fxPanel.setLayout(new GridBagLayout());
                 gbc.insets = new Insets(10,5,10,10);
-                gbc.fill = GridBagConstraints.BOTH;
                 gbc.gridheight = 4;
                 gbc.gridx = 1;
                 gbc.gridy = 0;
+                gbc.fill = GridBagConstraints.BOTH;
                 gbc.weighty = 1.0;
                 gbc.weightx = 0.9;
-                fxPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-                graphPanel.add(innerPanel);
-                combinedGraphPanel.add(graphPanel,gbc);
+                combinedGraphPanel.add(fxPanel,gbc);
                 
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
