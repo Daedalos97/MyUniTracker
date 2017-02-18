@@ -16,9 +16,11 @@
 
 package org.myunitracker.gui;
 
+import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 //MyUniTracker Import
@@ -31,27 +33,31 @@ import org.myunitracker.main.Unit;
 public class UnitsPanel extends JPanel {
     
     public UnitsPanel(Unit unit) {
-        this.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR);
+        this.setLayout(new BorderLayout());
+        this.setBorder(BorderFactory.createLineBorder(MyUniTrackerGUI.BACKGROUND_COLOUR, 5));
         
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5,5,5,5);
-        p.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
         
         GraphPanel gp = new GraphPanel(unit);
         gp.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-        gbc.insets = new Insets(5,0,5,5);
+        gbc.insets = new Insets(10,0,10,10);
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.gridheight = 2;
         gbc.gridx = 1;
         gbc.gridy = 0;
+        gbc.weighty = 1.0;
+        gbc.weightx = 0.9;
         p.add(gp,gbc);
         
         FormPanel fp = new FormPanel(unit,gp);
         fp.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
         gbc.anchor = GridBagConstraints.NORTH;
-        gbc.insets = new Insets(0,5,10,0);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0,5,10,5);
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.weightx = 0.1;
         p.add(fp,gbc);
         
         add(p);

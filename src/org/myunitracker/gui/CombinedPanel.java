@@ -16,6 +16,7 @@
 
 package org.myunitracker.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -48,6 +49,7 @@ import javafx.scene.chart.XYChart;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.layout.AnchorPane;
 
 
 //MyUniTracker Imports
@@ -79,9 +81,9 @@ public class CombinedPanel extends JPanel {
     private final String[] colour = new String[] {"#f3622d","#fba71b","#57b757","#44aaca","#4258c9","#9a42c8","#c84164","#888888"};
     
     public CombinedPanel() {
-        this.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR);
         tab = MyUniTrackerGUI.getTabbedPane();
-        
+        this.setLayout(new BorderLayout());
+        this.setBorder(BorderFactory.createLineBorder(MyUniTrackerGUI.BACKGROUND_COLOUR, 5));
         initialisePanel();
         
         tab.setSelectedIndex(tab.getTabCount()-1);
@@ -93,10 +95,11 @@ public class CombinedPanel extends JPanel {
             @Override
             public void run() {
                 JPanel combinedGraphPanel = new JPanel();
-                combinedGraphPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01); //Color.decode("#e0e0e0")
+                combinedGraphPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 combinedGraphPanel.setLayout(new GridBagLayout());
 
                 GridBagConstraints gbc = new GridBagConstraints();
+                gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.insets = new Insets(10,10,5,5);
 
                 JPanel statsPanel = new JPanel(new GridBagLayout());
@@ -106,6 +109,8 @@ public class CombinedPanel extends JPanel {
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.gridx = 0;
                 gbc.gridy = 0;
+                gbc.weighty = 0;
+                gbc.weightx = 0.1;
                 combinedGraphPanel.add(statsPanel,gbc);
 
                 JPanel unitPanel = new JPanel(new GridBagLayout());
@@ -115,6 +120,8 @@ public class CombinedPanel extends JPanel {
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.gridx = 0;
                 gbc.gridy = 1;
+                gbc.weighty = 0;
+                gbc.weightx = 0.1;
                 combinedGraphPanel.add(unitPanel,gbc);
 
                 JPanel pastPanel = new JPanel(new GridBagLayout());
@@ -125,6 +132,8 @@ public class CombinedPanel extends JPanel {
                 gbc.anchor = GridBagConstraints.NORTH;
                 gbc.gridx = 0;
                 gbc.gridy = 2;
+                gbc.weighty = 0;
+                gbc.weightx = 0.1;
                 combinedGraphPanel.add(pastPanel,gbc);
                 
                 checkBoxPanel = new JPanel(new GridBagLayout());
@@ -133,17 +142,22 @@ public class CombinedPanel extends JPanel {
                 ((javax.swing.border.TitledBorder) checkBoxPanel.getBorder()).setTitleFont(fontTitle);
                 gbc.gridx = 0;
                 gbc.gridy = 3;
+                gbc.weighty = 0;
+                gbc.weightx = 0.1;
                 combinedGraphPanel.add(checkBoxPanel,gbc);
                 
                 final JFXPanel fxPanel = new JFXPanel();
-                JPanel graphPanel = new JPanel(new GridBagLayout());
+                fxPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+                fxPanel.setLayout(new GridBagLayout());
                 gbc.insets = new Insets(10,5,10,10);
                 gbc.gridheight = 4;
                 gbc.gridx = 1;
                 gbc.gridy = 0;
-                fxPanel.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-                graphPanel.add(fxPanel);
-                combinedGraphPanel.add(graphPanel,gbc);
+                gbc.fill = GridBagConstraints.BOTH;
+                gbc.weighty = 1.0;
+                gbc.weightx = 0.9;
+                combinedGraphPanel.add(fxPanel,gbc);
+                
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
                         fxPanel.setScene(createScene());
@@ -487,7 +501,7 @@ public class CombinedPanel extends JPanel {
                     editPast_result.setEnabled(true);
                     past_unitsCB.setEnabled(true);
                 }
-                updateCheckBoxPanel();
+                updateStats();
             }
         });
     }
@@ -503,7 +517,7 @@ public class CombinedPanel extends JPanel {
     private Scene createScene() {
         data = new ArrayList(1);
         Stage s = new Stage();
-        s.setTitle("Unit Progress");
+        s.setTitle("Semester Progress");
         //defining the axes
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
@@ -525,7 +539,18 @@ public class CombinedPanel extends JPanel {
             data.add(series);
             lineChart.getData().add(series);
         }
-        Scene scene = new Scene(lineChart,689,669);
+        
+        AnchorPane anchorPane = new AnchorPane();
+        
+        AnchorPane.setTopAnchor(lineChart, 0.0);
+        AnchorPane.setBottomAnchor(lineChart, 0.0);
+        AnchorPane.setLeftAnchor(lineChart, 0.0);
+        AnchorPane.setRightAnchor(lineChart, 0.0);
+        
+        anchorPane.getChildren().add(lineChart);
+        
+        Scene scene = new Scene(anchorPane);
+       
         Platform.setImplicitExit(false);
         return scene;
     }
@@ -613,7 +638,7 @@ public class CombinedPanel extends JPanel {
             super("Add Past Results");
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             this.result = res;
-            setSize(250,230);
+            setSize(330,250);
             setLocationRelativeTo(null);
             initialiseDialog();
             setVisible(true);
@@ -676,22 +701,25 @@ public class CombinedPanel extends JPanel {
             add_button.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
             gbc.gridwidth = 2;
             gbc.gridx = 0;
-            gbc.gridy = 5;
+            gbc.gridy = 6;
             pane.add(add_button,gbc);
+            
+            final JLabel error_message;
             
             final JCheckBox core_unitCheck = new JCheckBox();
             
             if (result != null) {
                 add_button.setText("Save Changes");
+                
                 unit_name = new JTextField(result.getUnitName());
                 unit_name.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
                 unit_name.setFont(fontText);
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.gridx = 1;
                 gbc.gridy = 0;
+                gbc.gridwidth = 2;
                 pane.add(unit_name,gbc);
                 
-                gbc.fill = GridBagConstraints.NONE;
                 
                 final_mark = new JTextField(String.valueOf(result.getFinalMark()));
                 final_mark.setFont(fontText);
@@ -700,7 +728,6 @@ public class CombinedPanel extends JPanel {
                 gbc.gridx = 1;
                 gbc.gridy = 2;
                 pane.add(final_mark,gbc);
-                gbc.fill = GridBagConstraints.NONE;
 
                 credit_points = new JTextField(String.valueOf(result.getCreditPoints()));
                 credit_points.setFont(fontText);
@@ -717,27 +744,53 @@ public class CombinedPanel extends JPanel {
                 gbc.gridy = 4;
                 pane.add(core_unitCheck,gbc);
                 
+                error_message = new JLabel("");
+                gbc.gridx = 0;
+                gbc.gridy = 5;
+                gbc.gridwidth = 3;
+                pane.add(error_message, gbc);
+                
                 add_button.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        result.setUnitName(unit_name.getText());
-                        result.setFinalGrade(getGradeFromMark(Double.parseDouble(final_mark.getText())));
-                        result.setFinalMark(Double.parseDouble(final_mark.getText()));
-                        result.setCreditPoints(Double.parseDouble(credit_points.getText()));
-                        result.setCoreUnit(core_unitCheck.isSelected());
-                        past_unitsCB.removeAllItems();
-                        for (Unit u : MyUniTracker.past_results) 
-                            past_unitsCB.addItem(u.getUnitName());
-                        if (past_unitsCB.getItemCount() == 0) {
-                            removePast_result.setEnabled(false);
-                            editPast_result.setEnabled(false);
-                            past_unitsCB.setEnabled(false);
-                        } else {
-                            editPast_result.setEnabled(true);
-                            editPast_result.setEnabled(true);
-                            past_unitsCB.setEnabled(true);
+                        try {
+                            String unitName = unit_name.getText();
+                            if (unitName.isEmpty() || unitName.equals("Enter valid name") || MyUniTracker.findPastUnit(unitName) != result) {
+                                throw new IllegalArgumentException();
+                            }
+                            
+                            Double finalMark = Double.parseDouble(final_mark.getText());
+                            int finalGrade = getGradeFromMark(Double.parseDouble(final_mark.getText()));
+                            if (finalMark > 100) {
+                                throw new NumberFormatException();
+                            }
+                            Double credPts = Double.parseDouble(credit_points.getText());
+                            
+                            result.setUnitName(unitName);
+                            result.setFinalGrade(finalGrade);
+                            result.setFinalMark(finalMark);
+                            result.setCreditPoints(credPts);
+                            result.setCoreUnit(core_unitCheck.isSelected());
+                            past_unitsCB.removeAllItems();
+                            for (Unit u : MyUniTracker.past_results) 
+                                past_unitsCB.addItem(u.getUnitName());
+                            if (past_unitsCB.getItemCount() == 0) {
+                                removePast_result.setEnabled(false);
+                                editPast_result.setEnabled(false);
+                                past_unitsCB.setEnabled(false);
+                            } else {
+                                editPast_result.setEnabled(true);
+                                editPast_result.setEnabled(true);
+                                past_unitsCB.setEnabled(true);
+                            }
+                            close();
+                        } catch (NumberFormatException NFE) {
+                            error_message.setForeground(Color.red);
+                            error_message.setText("Check you entered valid numbers");
+                        } catch (IllegalArgumentException IAE) {
+                            unit_name.setForeground(Color.red);
+                            unit_name.setText("Enter valid name");
                         }
-                        close();
                     }
                 });
             } else {
@@ -775,28 +828,55 @@ public class CombinedPanel extends JPanel {
                 gbc.gridy = 4;
                 pane.add(core_unitCheck,gbc);
                 
+                error_message = new JLabel("");
+                gbc.gridx = 0;
+                gbc.gridy = 5;
+                gbc.gridwidth = 3;
+                pane.add(error_message, gbc);
+                
                 add_button.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Unit res = new Unit(unit_name.getText(),Double.parseDouble(credit_points.getText()));
-                        res.setFinalGrade(getGradeFromMark(Double.parseDouble(final_mark.getText())));
-                        res.setFinalMark(Double.parseDouble(final_mark.getText()));
-                        res.setCoreUnit(core_unitCheck.isSelected());
-                        MyUniTracker.past_results.add(res);
-                        past_unitsCB.removeAllItems();
-                        for (Unit u : MyUniTracker.past_results) 
-                            past_unitsCB.addItem(u.getUnitName());
-                        if (past_unitsCB.getItemCount() == 0) {
-                            removePast_result.setEnabled(false);
-                            editPast_result.setEnabled(false);
-                            past_unitsCB.setEnabled(false);
-                        } else {
-                            removePast_result.setEnabled(true);
-                            editPast_result.setEnabled(true);
-                            past_unitsCB.setEnabled(true);
-                        }
-                        close();
                         
+                        try {
+                            String unitName = unit_name.getText();
+                            if (unitName.isEmpty() || unitName.equals("Unit Code") || unitName.equals("Enter valid name") || MyUniTracker.findPastUnit(unitName) != null ) {
+                                throw new IllegalArgumentException();
+                            }
+                            
+                            Double finalMark = Double.parseDouble(final_mark.getText());
+                            int finalGrade = getGradeFromMark(Double.parseDouble(final_mark.getText()));
+                            if (finalMark > 100) {
+                                throw new NumberFormatException();
+                            }
+                            Double credPts = Double.parseDouble(credit_points.getText());
+                        
+                            Unit res = new Unit(unitName,credPts);
+                            res.setFinalGrade(finalGrade);
+                            res.setFinalMark(finalMark);
+                            res.setCoreUnit(core_unitCheck.isSelected());
+                            MyUniTracker.past_results.add(res);
+                            past_unitsCB.removeAllItems();
+                            for (Unit u : MyUniTracker.past_results) 
+                                past_unitsCB.addItem(u.getUnitName());
+                            if (past_unitsCB.getItemCount() == 0) {
+                                removePast_result.setEnabled(false);
+                                editPast_result.setEnabled(false);
+                                past_unitsCB.setEnabled(false);
+                            } else {
+                                removePast_result.setEnabled(true);
+                                editPast_result.setEnabled(true);
+                                past_unitsCB.setEnabled(true);
+                            }
+                            close();
+                            
+                        } catch (NumberFormatException NFE) {
+                            error_message.setForeground(Color.red);
+                            error_message.setText("Check ypu entered valid numbers");
+                        } catch (IllegalArgumentException IAE) {
+                            unit_name.setForeground(Color.red);
+                            unit_name.setText("Enter valid name");
+                        }
                     }
                 });
             }
