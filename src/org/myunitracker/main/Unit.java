@@ -225,21 +225,17 @@ public class Unit {
         double mark_weighted = 0.0;
         double finalExamWeighting = 0.0;
         for (int i = 0; i < getAssessments().size(); i++) {
-            if (!assessments.get(i).getAssessmentName().contains("Final Exam")) {
-                completedweight += assessments.get(i).getAssessmentWeight();
-                mark_weighted += (assessments.get(i).getPercentage()*assessments.get(i).getAssessmentWeight())/100.0;
-            } else {
-                finalExamWeighting = getAssessments().get(i).getAssessmentWeight();
-            }
+            completedweight += assessments.get(i).getAssessmentWeight();
+            mark_weighted += (assessments.get(i).getPercentage()*assessments.get(i).getAssessmentWeight())/100.0;
         }
-        if (finalExamWeighting > 0.0) setHasFinal(true);
+        this.completed_weight = completedweight;
+        this.exam_weight = 100.0-completedweight;
+        double mark = (mark_weighted/completedweight)*100.0;
+        this.percent = (double)Math.round(mark*100d)/100d;
+        if (exam_weight > 0.5) setHasFinal(true);
         if (hasFinal()) {
             this.percentage = (double)Math.round(((79.6-mark_weighted)/(finalExamWeighting/100.0))*1000d)/1000d;
         }
-        this.completed_weight = completedweight;
-        this.exam_weight = finalExamWeighting;
-        double mark = (mark_weighted/completedweight)*100.0;
-        this.percent = (double)Math.round(mark*100d)/100d; 
     }
     
     /**
