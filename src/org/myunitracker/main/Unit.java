@@ -28,17 +28,18 @@ public class Unit {
     private String UnitName;
     private int grade;
     private int final_grade;
-    private double percentage = 0.0;
     private double credit_points; // We need this for calculating the WAM and GPA
     private double weightedMark;
     /** The percentage mark for the unit */
     private double percent;
     private double completed_weight;
-    private double exam_weight; //weight for the final assessment (exam)
+    private double exam_weight; //weight for the final exam
     private boolean hasFinal = false;
     private double final_mark;
+    private boolean hasFinalMark;
     private boolean displayOverview = true;
     private boolean isCore;
+    private boolean isFinalisable = false;
     //Use an ENUM you DUM DUM
     public static final int GRADE_HD = 0;
     public static final int GRADE_D = 1;
@@ -60,7 +61,6 @@ public class Unit {
         this.weightedMark = 0.0;
         this.percent = 0.0;
         this.completed_weight = 0.0;
-        this.percentage = 0.0;
         this.exam_weight = 0.0;
         this.final_mark = 0.0;
     }
@@ -112,14 +112,6 @@ public class Unit {
     public void setGrade(int i) { this.grade = i; }
     
     /**
-     * @return The weighted mark for this unit.
-     * e.g. If you have 2 assessments. A1: you get 10/15 and its weighted at 10%
-     * for the unit, and A2: you get 11/20 and its weighted at 5%.
-     * Weighted mark should be 9.42, but your percentage is 62.78%.
-     */
-    public double getWeightedMark() { return this.weightedMark; }
-    
-    /**
      * @return  
      */
     public double getPercentage() { return this.percent; }
@@ -141,7 +133,14 @@ public class Unit {
      */
     public double getFinalMark() { return this.final_mark; }
     
-    public void setFinalMark(double mark) { this.final_mark = mark; }
+    public void setFinalMark(double mark) { 
+        this.final_mark = mark;
+        if (mark == 0.0) {
+            this.hasFinalMark = false;
+        } else this.hasFinalMark = true;
+    }
+    
+    public boolean getHasFinalMark() { return this.hasFinalMark; }
     
     public String getFinalGrade() { return gradeToString(this.final_grade); }
     
@@ -159,6 +158,10 @@ public class Unit {
     public boolean isCoreUnit() { return this.isCore; }
     
     public void setCoreUnit(boolean isCoreUnit) { this.isCore = isCoreUnit; }
+    
+    public boolean isFinalisable() { return this.isFinalisable; }
+    
+    private void setFinalisable(boolean finalize) { this.isFinalisable = finalize; }
     
     /**
      * Checks whether or not editing an assessment's weighting will put the unit
@@ -196,17 +199,14 @@ public class Unit {
      */
     public double percentForGrade(int grade) {
         double mark_needed = 0.0;
-        if (!hasFinal()) return 0.0;
-        else {
-            switch (grade) {
-                case GRADE_N: mark_needed = 49.4d; break;
-                case GRADE_P: mark_needed = 49.6d; break;
-                case GRADE_CR: mark_needed = 59.6d; break;
-                case GRADE_D: mark_needed = 69.6d; break;
-                case GRADE_HD: mark_needed = 79.6d; break;
-            }
+        switch (grade) {
+            case GRADE_N: mark_needed = 49.4d; break;
+            case GRADE_P: mark_needed = 49.6d; break;
+            case GRADE_CR: mark_needed = 59.6d; break;
+            case GRADE_D: mark_needed = 69.6d; break;
+            case GRADE_HD: mark_needed = 79.6d; break;
         }
-        return (double)Math.round(((mark_needed-(getPercentage()*(getWeight()/100.0)))/(exam_weight/100.0))*1000d)/1000d;
+        return (double)Math.round(((mark_needed-(getPercentage()*(getWeight()/100.0)))/(exam_weight))*1000d)/1000d;
     }
     
     /**
@@ -223,18 +223,20 @@ public class Unit {
     private void updateWeighting() {
         double completedweight = 0.0;
         double mark_weighted = 0.0;
-        double finalExamWeighting = 0.0;
         for (int i = 0; i < getAssessments().size(); i++) {
             completedweight += assessments.get(i).getAssessmentWeight();
             mark_weighted += (assessments.get(i).getPercentage()*assessments.get(i).getAssessmentWeight())/100.0;
         }
         this.completed_weight = completedweight;
-        this.exam_weight = 100.0-completedweight;
-        double mark = (mark_weighted/completedweight)*100.0;
-        this.percent = (double)Math.round(mark*100d)/100d;
-        if (exam_weight > 0.5) setHasFinal(true);
-        if (hasFinal()) {
-            this.percentage = (double)Math.round(((79.6-mark_weighted)/(finalExamWeighting/100.0))*1000d)/1000d;
+        this.exam_weight = (100.0-completedweight)/100;
+        
+        if (!getHasFinalMark()) {
+            double mark = (mark_weighted/completedweight)*100.0;
+            this.percent = (double)Math.round(mark*100d)/100d;
+        } else {
+            double mark = (mark_weighted + (final_mark*exam_weight));
+            System.out.println("Final Mark Overall: " + mark);
+            this.percent = (double)Math.round(mark*100d)/100d;
         }
     }
     
@@ -242,14 +244,23 @@ public class Unit {
      * Updates the grade the student is currently on for this unit.
      */
     private void updateGrade() {
-        switch ((int) Math.floor(getPercentage()/10.0)) {
-            default: this.grade = GRADE_N; break;
-            case 5: this.grade = GRADE_P; break;
-            case 6: this.grade = GRADE_CR; break;
-            case 7: this.grade = GRADE_D; break;
-            case 8: this.grade = GRADE_HD; break;
-            case 9: this.grade = GRADE_HD; break;
-            case 10: this.grade = GRADE_HD; break;
+        if (getPercentage() >= 79.6) this.grade = GRADE_HD;
+        else if (getPercentage() >= 69.6) this.grade = GRADE_D;
+        else if (getPercentage() >= 59.6) this.grade = GRADE_CR;
+        else if (getPercentage() >= 49.6) this.grade = GRADE_P;
+        else {
+            this.grade = GRADE_N;
         }
+    }
+    
+    /**
+     * Moves this unit to past units and removes it from the current units.
+     */
+    public void finaliseUnit() {
+        System.out.println();
+        //setFinalGrade();
+        //Remove unit from current units
+        //Add unit to past_results
+    
     }
 }

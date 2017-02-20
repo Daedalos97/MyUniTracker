@@ -46,8 +46,11 @@ import org.myunitracker.main.UnitReader;
 public class FormPanel extends JPanel implements ActionListener {
     
     private Unit unit;
-    private JButton add,edit,remove,finalMarkNeeded, remove_button;
-    private JLabel finalMarkLabel,curGrade,curMark,reqMark;
+    private JButton add,edit,remove,finalMarkNeeded, remove_button, addFinal_button, 
+                    finalise_button, removeFinal_button;
+    
+    private JLabel finalMarkLabel,curGrade,curMark,reqMark, addFinal_label;
+    private JTextField addFinal_text;
     private JComboBox finalGradeCB;
     private JComboBox<String> assessmentsCB;
     private JTabbedPane tab;
@@ -121,6 +124,16 @@ public class FormPanel extends JPanel implements ActionListener {
         gbc.weightx = 1.0;
         basePanel.add(unitPanel,gbc);
         
+        JPanel examPanel = new JPanel();
+        examPanel.setBackground(Color.WHITE);
+        examPanel.setLayout(new GridBagLayout());
+        examPanel.setBorder(BorderFactory.createTitledBorder("Final Exam & Finalise Unit"));
+        ((javax.swing.border.TitledBorder) examPanel.getBorder()).setTitleFont(fontTitle);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.weighty = 0;
+        gbc.weightx = 1.0;
+        basePanel.add(examPanel, gbc);
         
         /*
          *Assessments Panel 
@@ -251,21 +264,12 @@ public class FormPanel extends JPanel implements ActionListener {
         statsPanel.add(finalGradeCB,gbcStats);
         gbcStats.anchor = GridBagConstraints.CENTER;
         
-        if (unit.hasFinal()) {
-            reqMark = new JLabel("Need " + unit.percentForGrade(0) + " in final exam to get HD.");
-            reqMark.setFont(fontText);
-            gbcStats.gridwidth = 2;
-            gbcStats.gridx = 0;
-            gbcStats.gridy = 2;
-            statsPanel.add(reqMark,gbcStats);
-        } else {
-            reqMark = new JLabel("No final exam has been added to this unit.");
-            reqMark.setFont(fontText);
-            gbcStats.gridwidth = 2;
-            gbcStats.gridx = 0;
-            gbcStats.gridy = 2;
-            statsPanel.add(reqMark,gbcStats);
-        }
+        reqMark = new JLabel("Need " + unit.percentForGrade(0) + " in final exam to get HD.");
+        reqMark.setFont(fontText);
+        gbcStats.gridwidth = 2;
+        gbcStats.gridx = 0;
+        gbcStats.gridy = 2;
+        statsPanel.add(reqMark,gbcStats);
         
         finalMarkNeeded = new JButton("% needed in exam");
         finalMarkNeeded.setFont(fontText);
@@ -311,12 +315,8 @@ public class FormPanel extends JPanel implements ActionListener {
         finalMarkNeeded.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (unit.hasFinal()) {
-                    String grade = (String) finalGradeCB.getSelectedItem();
-                    reqMark.setText("Need " + unit.percentForGrade(UnitReader.getGrade(grade)) + " in final exam to get " + grade + ".");
-                } else {
-                    reqMark.setText("No final exam has been added to this unit.");
-                }
+                String grade = (String) finalGradeCB.getSelectedItem();
+                reqMark.setText("Need " + unit.percentForGrade(UnitReader.getGrade(grade)) + " in final exam to get " + grade + ".");
             }
         });
         
@@ -398,6 +398,58 @@ public class FormPanel extends JPanel implements ActionListener {
             }
         });
         
+        GridBagConstraints gbcExam = new GridBagConstraints();
+        gbcExam.insets = new Insets(3,3,3,3);
+        
+        addFinal_label = new JLabel("Enter Exam Percentage (%):");
+        addFinal_label.setFont(fontText);
+        gbcExam.gridx = 0;
+        gbcExam.gridy = 0;
+        examPanel.add(addFinal_label,gbcExam);
+        
+        addFinal_text = new JTextField();
+        if (unit.getHasFinalMark()) {
+            addFinal_text.setText(String.valueOf(unit.getFinalMark()));
+        }
+        addFinal_text.setFont(fontText);
+        addFinal_text.setColumns(5);
+        gbcExam.gridx = 1;
+        gbcExam.gridy = 0;
+        examPanel.add(addFinal_text,gbcExam);
+        
+        addFinal_button = new JButton("Add/Edit Final Exam %");
+        addFinal_button.setFont(fontText);
+        addFinal_button.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+        gbcExam.gridx = 0;
+        gbcExam.gridy = 1;
+        examPanel.add(addFinal_button,gbcExam);
+        
+        removeFinal_button = new JButton("Remove Final Exam %");
+        removeFinal_button.setFont(fontText);
+        removeFinal_button.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+        removeFinal_button.setEnabled(false);
+        gbcExam.gridx = 1;
+        gbcExam.gridy = 1;
+        examPanel.add(removeFinal_button,gbcExam);
+        
+        finalise_button = new JButton("Finalise Unit");
+        finalise_button.setFont(fontText);
+        finalise_button.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+        gbcExam.gridx = 0;
+        gbcExam.gridy = 2;
+        gbcExam.gridwidth = 2;
+        examPanel.add(finalise_button,gbcExam);
+        
+        /**if (!unit.getHasFinalMark()) {
+            removeFinal_button.setEnabled(false);
+            finalise_button.setVisible(false);
+        } else {
+            finalMarkLabel.setVisible(false);
+            finalMarkNeeded.setVisible(false);
+            finalGradeCB.setVisible(false);
+            reqMark.setVisible(false);
+        }**/
+        
         //Initialise Listeners
         initialiseListeners();
         
@@ -417,6 +469,47 @@ public class FormPanel extends JPanel implements ActionListener {
                 tab.removeTabAt(tab.getSelectedIndex());
                 MyUniTracker.units.remove(tab.getSelectedIndex());
                 updatePanes();
+            }
+        });
+        addFinal_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    double final_mark = Double.parseDouble(addFinal_text.getText());
+                    unit.setFinalMark(final_mark);
+                    removeFinal_button.setEnabled(true);
+                    finalise_button.setVisible(true);
+                    finalMarkNeeded.setVisible(false);
+                    finalMarkLabel.setVisible(false);
+                    finalGradeCB.setVisible(false);
+                    reqMark.setVisible(false);
+                    unit.update();
+                    curGrade.setText(unit.gradeToString(unit.getGrade()));
+                    curMark.setText(String.valueOf(unit.getPercentage()));
+                } catch (NumberFormatException NFE) {
+                    
+                }
+            }
+        });
+        removeFinal_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                unit.setFinalMark(0.0);
+                removeFinal_button.setEnabled(false);
+                finalise_button.setVisible(false);
+                finalMarkNeeded.setVisible(true);
+                finalMarkLabel.setVisible(true);
+                finalGradeCB.setVisible(true);
+                reqMark.setVisible(true);
+                unit.update();
+                curGrade.setText(unit.gradeToString(unit.getGrade()));
+                curMark.setText(String.valueOf(unit.getPercentage()));
+            }
+        });
+        finalise_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                unit.finaliseUnit();
             }
         });
     }
