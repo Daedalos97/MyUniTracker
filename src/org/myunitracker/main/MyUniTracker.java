@@ -42,6 +42,7 @@ public class MyUniTracker {
     private static double WAM;
     private static boolean isCurtin = false;
     private static double DEFAULT_CREDIT = 6.0;
+    private static MyUniTrackerGUI MUT;
     
     /*
      * @return Whether user is a curtin student or not.
@@ -268,6 +269,14 @@ public class MyUniTracker {
     }
     
     /**
+     * Makes base frame un-focusable
+     * @param focus     Whether the frame should be focusable or not.
+     */
+    public static void isWindowFocusable(boolean focus) {
+        MUT.setFocusableWindowState(focus);
+    }
+    
+    /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
@@ -294,7 +303,7 @@ public class MyUniTracker {
         }
         window.setVisible(false);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        MyUniTrackerGUI MUT = new MyUniTrackerGUI("MyUniTracker",screenSize.width,screenSize.height);
+        MUT = new MyUniTrackerGUI("MyUniTracker",screenSize.width,screenSize.height);
         MUT.getTabbedPane().setSelectedIndex(MUT.getTabbedPane().getTabCount()-1);
         System.out.println(System.currentTimeMillis() - time);
     }

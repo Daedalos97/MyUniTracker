@@ -640,10 +640,17 @@ public class CombinedPanel extends JPanel {
             this.result = res;
             setSize(330,250);
             setLocationRelativeTo(null);
+            setWindowState(false);
             initialiseDialog();
             setVisible(true);
         }
         
+        //Makes base window not focusable
+        private void setWindowState(boolean state) {
+            MyUniTracker.isWindowFocusable(state);
+        }
+        
+        //Converts an integer grade into a storable grade for the unit
         private int getGradeFromMark(double mark) {
             switch ((int)Math.floor(mark/10.0)) {
                 case 5: return Unit.GRADE_P;
@@ -890,6 +897,6 @@ public class CombinedPanel extends JPanel {
             add(pane);
         }
         
-        private void close() { this.setVisible(false); this.dispose(); updateStats(); }
+        private void close() { this.setVisible(false); this.dispose(); updateStats(); this.setWindowState(true); }
     }
 }

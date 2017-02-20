@@ -437,6 +437,7 @@ public class FormPanel extends JPanel implements ActionListener {
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             setSize(275,175);
             setLocationRelativeTo(null);
+            setWindowState();
             initialiseDialog(a);
         }
         
@@ -445,7 +446,12 @@ public class FormPanel extends JPanel implements ActionListener {
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             setSize(330,250);
             setLocationRelativeTo(null);
+            setWindowState();
             initialiseDialog(null);
+        }
+        
+        private void setWindowState() {
+            MyUniTracker.isWindowFocusable(false);
         }
         
         private void initialiseDialog(Assessment a) {
@@ -494,6 +500,7 @@ public class FormPanel extends JPanel implements ActionListener {
                     
             final JLabel error_message;
             
+            //Adding an assessment
             if (a == null) {
                 edit_assessname = new JTextField("Assessment");
                 edit_assessname.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
@@ -568,6 +575,7 @@ public class FormPanel extends JPanel implements ActionListener {
                         }
                     }
                 });
+            //Editing an assessment
             } else {
                 edit_assessname = new JTextField(ass.getAssessmentName());
                 edit_assessname.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
@@ -652,6 +660,6 @@ public class FormPanel extends JPanel implements ActionListener {
             this.setVisible(true);
         }
         
-        private void close() { this.setVisible(false); this.dispose();}
+        private void close() { this.setVisible(false); this.dispose(); MyUniTracker.isWindowFocusable(true);}
     } 
 }
