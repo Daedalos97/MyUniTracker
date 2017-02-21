@@ -23,7 +23,6 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-//MyUniTracker Import
 import org.myunitracker.main.Unit;
 
 

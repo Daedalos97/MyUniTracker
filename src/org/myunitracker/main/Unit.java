@@ -159,10 +159,6 @@ public class Unit {
     
     public void setCoreUnit(boolean isCoreUnit) { this.isCore = isCoreUnit; }
     
-    public boolean isFinalisable() { return this.isFinalisable; }
-    
-    private void setFinalisable(boolean finalize) { this.isFinalisable = finalize; }
-    
     /**
      * Checks whether or not editing an assessment's weighting will put the unit
      * on a weighting greater than 100, which is normally not allowed.
@@ -235,7 +231,6 @@ public class Unit {
             this.percent = (double)Math.round(mark*100d)/100d;
         } else {
             double mark = getFinalMark();
-            System.out.println("Final Mark Overall: " + mark);
             this.percent = (double)Math.round(mark);
         }
     }

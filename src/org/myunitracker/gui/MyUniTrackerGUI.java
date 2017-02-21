@@ -18,22 +18,16 @@ package org.myunitracker.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
-//MyUniTracker Import
 import org.myunitracker.main.MyUniTracker;
 
 /**
