@@ -120,8 +120,7 @@ public class MyUniTrackerGUI extends JFrame {
         }
         
         CP = new CombinedPanel();
-        tab.add("Overview",CP);
-        
+        tab.add("Overview",CP);   
     }
     
     /**

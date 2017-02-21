@@ -76,6 +76,7 @@ public class CombinedPanel extends JPanel {
     private Font fontTitle = MyUniTrackerGUI.FONT_TITLE, fontSubTitle = MyUniTrackerGUI.fontSubTitle, fontText = MyUniTrackerGUI.fontText;
     private LineChart<String,Number> lineChart;
     private Map<JCheckBox,String> checkMap;
+    private String[] past_unit_data;
     
     //All the colours the FXGraph uses.
     private final String[] colour = new String[] {"#f3622d","#fba71b","#57b757","#44aaca","#4258c9","#9a42c8","#c84164","#888888"};
@@ -398,11 +399,6 @@ public class CombinedPanel extends JPanel {
                 pastPanel.add(addPast_result,gbcPast);
                 gbcPast.fill = GridBagConstraints.NONE;
 
-                String[] past_unit_data = new String[MyUniTracker.past_results.size()];
-                for (int i = 0; i < past_unit_data.length; i++) {
-                    past_unit_data[i] = MyUniTracker.past_results.get(i).getUnitName();
-                }
-
                 JLabel past_unitLabel = new JLabel("Result:");
                 past_unitLabel.setFont(fontText);
                 gbcPast.anchor = GridBagConstraints.EAST;
@@ -425,8 +421,16 @@ public class CombinedPanel extends JPanel {
                 gbcPast.gridx = 1;
                 pastPanel.add(removePast_result,gbcPast);
                 
-                past_unitsCB = new JComboBox(past_unit_data);
+                past_unitsCB = new JComboBox();
+                past_unitsCB.setToolTipText("Select past results");
+                past_unitsCB.setFont(fontText);
+                past_unitsCB.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
+                gbcPast.gridx = 1;
+                gbcPast.gridy = 2;
+                pastPanel.add(past_unitsCB,gbcPast);
                 
+                //Updates the above combobox.
+                updatePastResults();
                 /*
                     Simply check to see if there are any past results and if 
                 there is then allow users to use the edit and remove button,
@@ -438,13 +442,6 @@ public class CombinedPanel extends JPanel {
                 } else { removePast_result.setEnabled(true); editPast_result.setEnabled(true);
                     past_unitsCB.setEnabled(true);
                 }
-                
-                past_unitsCB.setToolTipText("Select past results");
-                past_unitsCB.setFont(fontText);
-                past_unitsCB.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
-                gbcPast.gridx = 1;
-                gbcPast.gridy = 2;
-                pastPanel.add(past_unitsCB,gbcPast);
 
                 iscurtin_student.addActionListener(new ActionListener() {
                     @Override
@@ -504,6 +501,22 @@ public class CombinedPanel extends JPanel {
                 updateStats();
             }
         });
+    }
+    
+    public void updatePastResults() {
+        past_unitsCB.removeAllItems();
+        for (Unit u : MyUniTracker.past_results) {
+                past_unitsCB.addItem(u.getUnitName());
+            if (past_unitsCB.getItemCount() == 0) {
+                removePast_result.setEnabled(false);
+                editPast_result.setEnabled(false);
+                past_unitsCB.setEnabled(false);
+            } else {
+                removePast_result.setEnabled(true);
+                editPast_result.setEnabled(true);
+                past_unitsCB.setEnabled(true);
+            }
+        }
     }
     
     private void setCheckBoxVisible() {
@@ -778,18 +791,7 @@ public class CombinedPanel extends JPanel {
                             result.setFinalMark(finalMark);
                             result.setCreditPoints(credPts);
                             result.setCoreUnit(core_unitCheck.isSelected());
-                            past_unitsCB.removeAllItems();
-                            for (Unit u : MyUniTracker.past_results) 
-                                past_unitsCB.addItem(u.getUnitName());
-                            if (past_unitsCB.getItemCount() == 0) {
-                                removePast_result.setEnabled(false);
-                                editPast_result.setEnabled(false);
-                                past_unitsCB.setEnabled(false);
-                            } else {
-                                editPast_result.setEnabled(true);
-                                editPast_result.setEnabled(true);
-                                past_unitsCB.setEnabled(true);
-                            }
+                            updatePastResults();
                             close();
                         } catch (NumberFormatException NFE) {
                             error_message.setForeground(Color.red);
@@ -863,18 +865,7 @@ public class CombinedPanel extends JPanel {
                             res.setFinalMark(finalMark);
                             res.setCoreUnit(core_unitCheck.isSelected());
                             MyUniTracker.past_results.add(res);
-                            past_unitsCB.removeAllItems();
-                            for (Unit u : MyUniTracker.past_results) 
-                                past_unitsCB.addItem(u.getUnitName());
-                            if (past_unitsCB.getItemCount() == 0) {
-                                removePast_result.setEnabled(false);
-                                editPast_result.setEnabled(false);
-                                past_unitsCB.setEnabled(false);
-                            } else {
-                                removePast_result.setEnabled(true);
-                                editPast_result.setEnabled(true);
-                                past_unitsCB.setEnabled(true);
-                            }
+                            updatePastResults();
                             close();
                             
                         } catch (NumberFormatException NFE) {

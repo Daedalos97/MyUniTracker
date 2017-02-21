@@ -234,9 +234,9 @@ public class Unit {
             double mark = (mark_weighted/completedweight)*100.0;
             this.percent = (double)Math.round(mark*100d)/100d;
         } else {
-            double mark = (mark_weighted + (final_mark*exam_weight));
+            double mark = getFinalMark();
             System.out.println("Final Mark Overall: " + mark);
-            this.percent = (double)Math.round(mark*100d)/100d;
+            this.percent = (double)Math.round(mark);
         }
     }
     
@@ -257,10 +257,10 @@ public class Unit {
      * Moves this unit to past units and removes it from the current units.
      */
     public void finaliseUnit() {
-        System.out.println();
-        //setFinalGrade();
-        //Remove unit from current units
-        //Add unit to past_results
-    
+        System.out.println("Finalising Unit");
+        setFinalMark((double) Math.round(getPercentage()));
+        setFinalGrade(getGrade());
+        MyUniTracker.units.remove(this);
+        MyUniTracker.past_results.add(this);
     }
 }
