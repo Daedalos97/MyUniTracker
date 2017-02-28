@@ -365,7 +365,7 @@ public class CombinedPanel extends JPanel {
                             UnitsPanel up = new org.myunitracker.gui.UnitsPanel(u);
                             up.setVisible(true);
                             tab.insertTab(u.getUnitName(),null,up,null,tab.getTabCount()-1);
-                            updateAll();
+                            updateCheckBoxPanel();
                             unit_name.setText("Unit Code");
                         }
                     }
@@ -455,7 +455,7 @@ public class CombinedPanel extends JPanel {
                 /*
                  * Check Box Panel and Listener Init.
                  */
-                updateAll();
+                updateCheckBoxPanel();
                 addListeners();
                 
                 add(combinedGraphPanel);
@@ -498,7 +498,7 @@ public class CombinedPanel extends JPanel {
                     editPast_result.setEnabled(true);
                     past_unitsCB.setEnabled(true);
                 }
-                updateAll();
+                updateStats();
             }
         });
     }
@@ -604,7 +604,7 @@ public class CombinedPanel extends JPanel {
         });
     }
     
-    protected void updateAll() {
+    protected void updateCheckBoxPanel() {
         checkBoxPanel.removeAll();
         checkMap = new HashMap();
         
@@ -640,6 +640,7 @@ public class CombinedPanel extends JPanel {
             });
             unit.setForeground(Color.decode(colour[i%colour.length]));
         }
+        setCheckBoxVisible();
     }
     
     private class Dialog extends JFrame {
@@ -652,10 +653,17 @@ public class CombinedPanel extends JPanel {
             this.result = res;
             setSize(330,250);
             setLocationRelativeTo(null);
+            setWindowState(false);
             initialiseDialog();
             setVisible(true);
         }
         
+        //Makes base window not focusable
+        private void setWindowState(boolean state) {
+            MyUniTracker.isWindowFocusable(state);
+        }
+        
+        //Converts an integer grade into a storable grade for the unit
         private int getGradeFromMark(double mark) {
             switch ((int)Math.floor(mark/10.0)) {
                 case 5: return Unit.GRADE_P;
@@ -880,6 +888,6 @@ public class CombinedPanel extends JPanel {
             add(pane);
         }
         
-        private void close() { this.setVisible(false); this.dispose(); updateStats(); }
+        private void close() { this.setVisible(false); this.dispose(); updateStats(); this.setWindowState(true); }
     }
 }

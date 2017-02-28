@@ -442,6 +442,8 @@ public class FormPanel extends JPanel implements ActionListener {
         
         finalise_button = new JButton("Finalise Unit");
         finalise_button.setFont(fontText);
+        finalise_button.setVisible(false);
+        finalise_button.setEnabled(false);
         finalise_button.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
         gbcExam.anchor = GridBagConstraints.CENTER;
         gbcExam.gridx = 0;
@@ -488,6 +490,7 @@ public class FormPanel extends JPanel implements ActionListener {
                     unit.setFinalMark(final_mark);
                     removeFinal_button.setEnabled(true);
                     finalise_button.setVisible(true);
+                    finalise_button.setEnabled(true);
                     finalMarkNeeded.setVisible(false);
                     finalMarkLabel.setVisible(false);
                     finalGradeCB.setVisible(false);
@@ -506,6 +509,7 @@ public class FormPanel extends JPanel implements ActionListener {
                 unit.setFinalMark(0.0);
                 removeFinal_button.setEnabled(false);
                 finalise_button.setVisible(false);
+                finalise_button.setEnabled(false);
                 finalMarkNeeded.setVisible(true);
                 finalMarkLabel.setVisible(true);
                 finalGradeCB.setVisible(true);
@@ -547,6 +551,7 @@ public class FormPanel extends JPanel implements ActionListener {
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             setSize(275,175);
             setLocationRelativeTo(null);
+            setWindowState(false);
             initialiseDialog(a);
         }
         
@@ -555,7 +560,13 @@ public class FormPanel extends JPanel implements ActionListener {
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             setSize(330,250);
             setLocationRelativeTo(null);
+            setWindowState(false);
             initialiseDialog(null);
+        }
+        
+        //Makes base window not focusable
+        private void setWindowState(boolean state) {
+            MyUniTracker.isWindowFocusable(state);
         }
         
         private void initialiseDialog(Assessment a) {
@@ -604,6 +615,7 @@ public class FormPanel extends JPanel implements ActionListener {
                     
             final JLabel error_message;
             
+            //Adding an assessment
             if (a == null) {
                 edit_assessname = new JTextField("Assessment");
                 edit_assessname.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
@@ -678,6 +690,7 @@ public class FormPanel extends JPanel implements ActionListener {
                         }
                     }
                 });
+            //Editing an assessment
             } else {
                 edit_assessname = new JTextField(ass.getAssessmentName());
                 edit_assessname.setBackground(MyUniTrackerGUI.BACKGROUND_COLOUR01);
@@ -762,6 +775,6 @@ public class FormPanel extends JPanel implements ActionListener {
             this.setVisible(true);
         }
         
-        private void close() { this.setVisible(false); this.dispose();}
+        private void close() { this.setVisible(false); this.dispose(); setWindowState(true); }
     } 
 }
