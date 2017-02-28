@@ -59,7 +59,9 @@ public class MyUniTrackerGUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLookFeel();
         setSize(WIDTH, HEIGHT-100);
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        if (!System.getProperty("os.name").startsWith("Mac")) {
+            this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        }
         this.setLocationRelativeTo(null);
         
         //Add Icons
