@@ -25,29 +25,34 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Scene;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import javafx.scene.chart.CategoryAxis;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.scene.chart.XYChart;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import javafx.scene.layout.AnchorPane;
+
+
+//MyUniTracker Imports
 import org.myunitracker.main.MyUniTracker;
 import org.myunitracker.main.Unit;
 
