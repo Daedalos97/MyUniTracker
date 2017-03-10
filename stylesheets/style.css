@@ -7,6 +7,16 @@
     border-bottom: 1px solid #eee;
 }
 
+.strips {
+    background-color: #eee;
+}
+
+.container {
+    padding-left: 30px;
+    padding-right: 30px;
+    background-color: white;
+}
+
 h1 h2 h3 h4 h5 h6 {
     color:#222;
 }
@@ -74,6 +84,10 @@ header li:first-child a {
 
 header li:last-child a {
   border-radius:0 5px 5px 0;
+}
+
+header li:last-child {
+    border-right: none;
 }
 
 header ul a {
