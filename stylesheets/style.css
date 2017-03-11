@@ -2,19 +2,16 @@
   padding-bottom: 10px;
 }
 
-.page-header {
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
+.wrapper {
+    background-color: #fff;
 }
-
-.strips {
+.background {
     background-color: #eee;
 }
 
-.container {
-    padding-left: 30px;
-    padding-right: 30px;
-    background-color: white;
+.page-header {
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
 }
 
 h1 h2 h3 h4 h5 h6 {
@@ -31,10 +28,6 @@ li {
 
 .install_wrapper {
     padding-left: 20px;
-}
-
-.install_text {
-    padding-left: 10px;
 }
 
 .placeholders {
