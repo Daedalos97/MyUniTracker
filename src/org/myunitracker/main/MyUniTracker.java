@@ -281,7 +281,6 @@ public class MyUniTracker {
      */
     public static void main(String[] args) {
         //If directory does have a text file, read it. Else Dont
-        long time = System.currentTimeMillis();
         UnitReader UR = new UnitReader();
         UR.readUnits();
         units = UR.getUnits();
@@ -305,6 +304,5 @@ public class MyUniTracker {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         MUT = new MyUniTrackerGUI("MyUniTracker",screenSize.width,screenSize.height);
         MUT.getTabbedPane().setSelectedIndex(MUT.getTabbedPane().getTabCount()-1);
-        System.out.println(System.currentTimeMillis() - time);
     }
 }

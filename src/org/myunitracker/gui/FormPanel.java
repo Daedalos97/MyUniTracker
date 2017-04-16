@@ -722,7 +722,9 @@ public class FormPanel extends JPanel implements ActionListener {
                     public void actionPerformed(ActionEvent event) {
                         try {
                             String assessmentName = edit_assessname.getText();
-                            if (assessmentName.isEmpty() || assessmentName.equals("Enter valid name") || unit.findAssessment(assessmentName) != ass) {
+                            if (assessmentName.equals(ass.getAssessmentName())) {
+                                //Do Nothing if the person hasnt changed the assessment name.
+                            } else if (assessmentName.isEmpty() || assessmentName.equals("Enter valid name") || unit.findAssessment(assessmentName) != null) {
                                 throw new IllegalArgumentException();
                             }
                             Double mark = Double.parseDouble(edit_mark.getText());
